@@ -1,7 +1,7 @@
 package br.com.vinicius.santos.nifflerapi.controller;
 
 import br.com.vinicius.santos.nifflerapi.service.UserMessageService;
-import br.com.vinicius.santos.nifflerlib.models.dto.UserMessageDto;
+import br.com.vinicius.santos.nifflerlib.model.dto.UserMessageDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
