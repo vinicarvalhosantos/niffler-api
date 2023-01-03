@@ -4,7 +4,6 @@ import br.com.vinicius.santos.nifflerlib.request.TwitchRequests;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.io.IOException;
 
 public class TwitchRequestsRetrofit {
 
@@ -14,7 +13,7 @@ public class TwitchRequestsRetrofit {
 
     public TwitchRequests twitchHelixRequests;
 
-    private TwitchRequestsRetrofit() throws IOException {
+    private TwitchRequestsRetrofit() {
         final String BASE_AUTH_URL = System.getenv("TWITCH_AUTH_BASE_URL");
         final String BASE_HELIX_URL = System.getenv("TWITCH_HELIX_BASE_URL");
 
@@ -22,7 +21,7 @@ public class TwitchRequestsRetrofit {
         this.twitchHelixRequests = this.buildRetrofit(BASE_HELIX_URL).create(TwitchRequests.class);
     }
 
-    public static TwitchRequestsRetrofit getInstance() throws IOException {
+    public static TwitchRequestsRetrofit getInstance() {
         if (singleInstance == null) {
             singleInstance = new TwitchRequestsRetrofit();
         }

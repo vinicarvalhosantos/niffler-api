@@ -11,12 +11,14 @@ import br.com.vinicius.santos.nifflerlib.model.entity.UserEntity;
 import br.com.vinicius.santos.nifflerlib.repository.BlacklistRepository;
 import br.com.vinicius.santos.nifflerlib.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import retrofit2.Call;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -63,6 +65,13 @@ public class BlacklistServiceImpl implements BlacklistService {
         BlacklistEntity blacklistEntity = new BlacklistEntity(userEntity.getUsername(), userEntity);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(this.blacklistRepository.save(blacklistEntity));
+    }
+
+    @Override
+    public ResponseEntity<List<BlacklistEntity>> getBlacklist() {
+        List<BlacklistEntity> blacklistEntityList = this.blacklistRepository.findAll(Sort.by(Sort.Direction.ASC, "user_id"));
+
+        return ResponseEntity.status(HttpStatus.OK).body(blacklistEntityList);
     }
 
     private UserEntity getUserEntity(TwitchUserModelData twitchUserModel) {
