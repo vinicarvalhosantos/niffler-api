@@ -1,30 +1,24 @@
 package br.com.santos.vinicius.nifflerapi.service;
 
-import br.com.santos.vinicius.nifflerapi.NifflerApplication;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModel;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModelData;
 import br.com.santos.vinicius.nifflerapi.model.dto.BlacklistDto;
 import br.com.santos.vinicius.nifflerapi.model.entity.BlacklistEntity;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
-import br.com.santos.vinicius.nifflerapi.model.response.SuccessResponse;
 import br.com.santos.vinicius.nifflerapi.repository.BlacklistRepository;
 import br.com.santos.vinicius.nifflerapi.repository.UserRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -33,7 +27,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(BlacklistService.class)
-//@TestPropertySource(locations = "classpath:application-test-integration.properties")
 public class BlacklistServiceTest {
 
     @Autowired
