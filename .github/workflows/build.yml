@@ -10,6 +10,15 @@ on:
 jobs:
   #Test's job
   tests:
+    env:
+      AWS__ACCESS_KEY: ${{secrets.AWS__ACCESS_KEY}},
+      AWS__SECRET_KEY: ${{secrets.AWS__SECRET_KEY}},
+      CLIENT_ID: ${{secrets.CLIENT_ID}},
+      CLIENT_SECRET: ${{secrets.CLIENT_SECRET}},
+      PROD_URL: ${{secrets.PROD_URL}},
+      STAGE_URL: ${{secrets.STAGE_URL}},
+      TWITCH_AUTH_BASE_URL: ${{secrets.TWITCH_AUTH_BASE_URL}},
+      TWITCH_HELIX_BASE_URL: ${{secrets.TWITCH_HELIX_BASE_URL}},
     name: Unit tests
     #Run on Ubuntu using the latest version
     runs-on: ubuntu-latest
