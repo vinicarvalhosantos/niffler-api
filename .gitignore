@@ -31,3 +31,8 @@ build/
 
 ### VS Code ###
 .vscode/
+
+samconfig.toml
+template.yaml
+
+.aws-sam
