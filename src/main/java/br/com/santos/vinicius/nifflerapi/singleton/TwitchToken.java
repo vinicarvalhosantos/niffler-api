@@ -3,9 +3,6 @@ package br.com.santos.vinicius.nifflerapi.singleton;
 import br.com.santos.vinicius.nifflerapi.model.TwitchTokenModel;
 import br.com.santos.vinicius.nifflerapi.request.TwitchRequests;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Indexed;
 import retrofit2.Call;
 
 import java.io.IOException;
@@ -13,7 +10,6 @@ import java.util.Calendar;
 import java.util.Date;
 
 @Slf4j
-@Indexed
 public class TwitchToken {
 
     private final String CLIENT_ID = System.getenv("CLIENT_ID");
