@@ -72,28 +72,42 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=vinicarvalhosantos_niffler-api
-  deploy_lambda:
-    runs-on: ubuntu-latest  #Through which Server OS we need to Work (type of machine to run the job on)
+  build:
+    #Depends on sonar's job
+    needs: sonar
+    name: Build
+    #Run on Ubuntu using the latest version
+    runs-on: ubuntu-latest
     steps:
-      #Using versioned actions
-      - uses: actions/checkout@v2  # --> Reference a specific version
-      - uses: actions/setup-node@v2 # --> To Setup the Server With Node Env
+      #Check-out your repository under $GITHUB_WORKSPACE, so your workflow can access it
+      - uses: actions/checkout@v1
+      #Set up JDK 11
+      - name: Set up JDK
+        uses: actions/setup-java@v1
         with:
-          node-version: '14' #--> Specify the Version of the Node
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1 #--> Setup the Credential for the AWS cli
+          java-version: '11'
+      #Set up Maven cache
+      - name: Cache Maven packages
+        #This action allows caching dependencies and build outputs to improve workflow execution time.
+        uses: actions/cache@v1
         with:
-          # Created the Secrets Under the Repo only with These Variables
-          aws-access-key-id: ${{ secrets.AWS__ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS__SECRET_KEY }}
-          aws-region: ap-south-1 #--> Define Region of the AWS-CLI
-      - name: npm install
-        env:
-          CI: true
-        run: |
-          npm ci
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      #Build the application using Maven
+      - name: Build with Maven
+        run: mvn -B package -DskipTests --file pom.xml
+      #Build the application using Maven
+      - name: Upload JAR
+        #This uploads artifacts from your workflow allowing you to share data between jobs and store data once a workflow is complete.
+        uses: actions/upload-artifact@v2
+        with:
+          #Set artifact name
+          name: artifact
+          #From this path
+          path: target/data-0.0.1-SNAPSHOT.jar
       - name: deploy
         run: |
-          zip -j deploy.zip ./* #--> Zip the Code As we know lambda function accept the zip file.
+          zip -j deploy.zip target/niffler-api-*.jar
           aws lambda update-function-code --function-name=niffler-api-ProfileApiFunction-bGtDLDwXPVap --zip-file=fileb://deploy.zip
   # At last the AWS CLI command to Update the Zip file with existing One (With Correct Function Name)
