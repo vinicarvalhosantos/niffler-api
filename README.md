@@ -1,4 +1,4 @@
-
+<img alt="GitHub Workflow Status (with event)" src="https://img.shields.io/github/actions/workflow/status/vinicarvalhosantos/niffler-api/build.yml?style=plastic"><br>
 # Niffler Api
 
 This api is an user loyalty system by StreamElements points. That means that user will gain StreamElements points based on their interaction with the streamer and chat.
