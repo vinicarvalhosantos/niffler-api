@@ -9,8 +9,8 @@ Resources:
   ProfileApiFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./src/main/java/.
-      Handler: br.com.santos.vinicius.nifflerapi.config.handler.LambdaHandler::handleRequest
+      CodeUri: .
+      Handler: src.main.java.br.com.santos.vinicius.nifflerapi.config.handler.LambdaHandler::handleRequest
       Runtime: java11
       AutoPublishAlias: production
       SnapStart:
