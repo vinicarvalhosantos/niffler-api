@@ -88,10 +88,10 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS__ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS__SECRET_KEY }}
-          aws-region: sa_east_1
+          aws-region: sa_east_1a
       - name: Build with maven
         run: mvn -B package -DskipTests --file pom.xml
       # sam build
       - run: sam build --use-container
       # sam deploy
-      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name niffler-api --s3-bucket niffler-api --capabilities CAPABILITY_IAM --region sa_east_1
+      - run: sam deploy --no-confirm-changeset --no-fail-on-empty-changeset --stack-name niffler-api --s3-bucket niffler-api --capabilities CAPABILITY_IAM --region sa_east_1a
