@@ -33,6 +33,5 @@ build/
 .vscode/
 
 samconfig.toml
-template.yaml
 
 .aws-sam
