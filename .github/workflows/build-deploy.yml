@@ -9,7 +9,6 @@ on:
     types: [ opened, synchronize, reopened ]
 jobs:
   build-deploy:
-    needs: sonar
     name: Deploy application to lambda
     runs-on: ubuntu-latest
     steps:
