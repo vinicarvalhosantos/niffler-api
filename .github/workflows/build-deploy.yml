@@ -53,7 +53,7 @@ jobs:
       - run: ls
       - run: ls .aws-sam
       - run: ls ./.aws-sam/build
-      - run: nano ./.aws-sam/build/template.yaml
+      - run: ls ./.aws-sam/build/ProfileApiFunction
       # sam deploy
       - run: sam deploy --template template-deploy.yaml --no-confirm-changeset --no-fail-on-empty-changeset --stack-name niffler-api --s3-bucket niffler-api --capabilities CAPABILITY_IAM --region sa-east-1
       - run: rm template-deploy.yaml
