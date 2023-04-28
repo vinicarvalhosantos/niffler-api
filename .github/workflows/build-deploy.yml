@@ -61,5 +61,5 @@ jobs:
       - run: ls ./.aws-sam/build/ProfileApiFunction/br/com/santos/vinicius/nifflerapi/config
       - run: ls ./.aws-sam/build/ProfileApiFunction/br/com/santos/vinicius/nifflerapi/config/handler
       # sam deploy
-      - run: sam deploy --template template-deploy.yaml --no-confirm-changeset --no-fail-on-empty-changeset --stack-name niffler-api --s3-bucket niffler-api --capabilities CAPABILITY_IAM --region sa-east-1
+      - run: sam deploy --template template-deploy.yaml
       - run: rm template-deploy.yaml
