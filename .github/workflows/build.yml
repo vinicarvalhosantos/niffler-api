@@ -101,6 +101,14 @@ jobs:
         shell: bash
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          TWITCH_AUTH_BASE_URL: ${{secrets.TWITCH_AUTH_BASE_URL}}
+          TWITCH_HELIX_BASE_URL: ${{secrets.TWITCH_HELIX_BASE_URL}}
+          CLIENT_ID: ${{secrets.CLIENT_ID}}
+          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+          AWS__ACCESS_KEY: ${{secrets.AWS__ACCESS_KEY}}
+          AWS__SECRET_KEY: ${{secrets.AWS__SECRET_KEY}}
+          STAGE_URL: ${{secrets.STAGE_URL}}
+          PROD_URL: ${{secrets.PROD_URL}}
       # sam build
       - run: sam build --template-file template-deploy.yaml --use-container
       # sam deploy
