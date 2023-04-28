@@ -111,6 +111,7 @@ jobs:
           PROD_URL: ${{secrets.PROD_URL}}
       # sam build
       - run: pwd
+      - run: ls
       - run: pwd ./template-deploy.yaml
       - run: pwd template.yaml
       - run: sam build --template-file template-deploy.yaml --use-container
