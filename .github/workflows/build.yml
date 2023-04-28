@@ -99,6 +99,8 @@ jobs:
           chmod +x ./deploy-template.sh
           ./deploy-template.sh > template-deploy.yaml
         shell: bash
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
       # sam build
       - run: sam build --template-file template-deploy.yaml --use-container
       # sam deploy
