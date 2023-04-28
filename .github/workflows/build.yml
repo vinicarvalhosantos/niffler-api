@@ -115,6 +115,9 @@ jobs:
       - run: pwd ./template-deploy.yaml
       - run: pwd template.yaml
       - run: sam build --template-file template-deploy.yaml --use-container
+      - run: ls
+      - run: ls .aws-sam
+      - run: ls ./.aws-sam/build
       # sam deploy
-      - run: sam deploy --template template-deploy.yaml --no-confirm-changeset --no-fail-on-empty-changeset --stack-name niffler-api --s3-bucket aws-sam-cli-managed-default-samclisourcebucket-1anlq759e2iqz --capabilities CAPABILITY_IAM --region sa-east-1
+      - run: sam deploy --template template-deploy.yaml --no-confirm-changeset --no-fail-on-empty-changeset --stack-name niffler-api --capabilities CAPABILITY_IAM --region sa-east-1
       - run: rm template-deploy.yaml
