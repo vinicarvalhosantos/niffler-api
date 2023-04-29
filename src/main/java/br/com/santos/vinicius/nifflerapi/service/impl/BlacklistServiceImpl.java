@@ -38,7 +38,7 @@ public class BlacklistServiceImpl implements BlacklistService {
         UserEntity user = userService.fetchUserByUsername(username);
 
         if (user == null) {
-            ErrorResponse errorResponse = new ErrorResponse("This user does not a valid user", 404, HttpStatus.NOT_FOUND.toString());
+            ErrorResponse errorResponse = new ErrorResponse("This user does not a valid user", 404, HttpStatus.NOT_FOUND.name());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(errorResponse));
         }
 
@@ -85,7 +85,7 @@ public class BlacklistServiceImpl implements BlacklistService {
         List<BlacklistEntity> blacklistEntityList = IteratorUtils.toList(blacklistRepository.findAll().iterator());
 
         if (blacklistEntityList.isEmpty()) {
-            ErrorResponse errorResponse = new ErrorResponse("Any user are in blacklist", 404, HttpStatus.NOT_FOUND.toString());
+            ErrorResponse errorResponse = new ErrorResponse("Any user are in blacklist", 404, HttpStatus.NOT_FOUND.name());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(errorResponse));
         }
 
@@ -111,7 +111,7 @@ public class BlacklistServiceImpl implements BlacklistService {
     private ResponseEntity<Response> getUserInBlacklist(Optional<BlacklistEntity> blacklistEntity) {
 
         if (blacklistEntity.isEmpty()) {
-            ErrorResponse errorResponse = new ErrorResponse("User was not found in blacklist", 404, HttpStatus.NOT_FOUND.toString());
+            ErrorResponse errorResponse = new ErrorResponse("User was not found in blacklist", 404, HttpStatus.NOT_FOUND.name());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(errorResponse));
         }
         List<Object> records = List.of(blacklistEntity.get());
