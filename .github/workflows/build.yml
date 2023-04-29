@@ -1,5 +1,5 @@
 #Workflow name
-name: CI/CD Pipeline Build
+name: CI/CD Pipeline Build & Deploy
 on:
   workflow_dispatch:
   push:
@@ -72,3 +72,48 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=vinicarvalhosantos_niffler-api
+  build-deploy:
+    needs: tests
+    name: Deploy application to lambda
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
+        with:
+          java-version: 11
+          distribution: 'zulu'
+      - uses: aws-actions/setup-sam@v1
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{secrets.AWS__ACCESS_KEY}}
+          aws-secret-access-key: ${{secrets.AWS__SECRET_KEY}}
+          aws-region: sa-east-1
+      - name: remove template.yaml
+        run: rm -f template.yaml
+      - name: Build with maven
+        run: mvn -B package -DskipTests --file pom.xml
+      # Setting up template.yaml with environment variables
+      - name: Setup template-deploy.yaml
+        run: |
+          chmod +x ./deploy-template.sh
+          ./deploy-template.sh > template.yaml
+        shell: bash
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          TWITCH_AUTH_BASE_URL: ${{secrets.TWITCH_AUTH_BASE_URL}}
+          TWITCH_HELIX_BASE_URL: ${{secrets.TWITCH_HELIX_BASE_URL}}
+          CLIENT_ID: ${{secrets.CLIENT_ID}}
+          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+          AWS__ACCESS_KEY: ${{secrets.AWS__ACCESS_KEY}}
+          AWS__SECRET_KEY: ${{secrets.AWS__SECRET_KEY}}
+          STAGE_URL: ${{secrets.STAGE_URL}}
+          PROD_URL: ${{secrets.PROD_URL}}
+      # sam build
+      - name: SAM Build
+        run: sam build --use-container
+      # sam deploy
+      - name: SAM Deploy
+        run: sam deploy
+      - name: remove template.yaml
+        run: rm -f template.yaml
