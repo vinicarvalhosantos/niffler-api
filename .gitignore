@@ -33,5 +33,6 @@ build/
 .vscode/
 
 template-local.yaml
+template.yaml
 
 .aws-sam

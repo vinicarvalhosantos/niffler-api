@@ -32,7 +32,7 @@ jobs:
       - name: Setup template-deploy.yaml
         run: |
           chmod +x ./deploy-template.sh
-          ./deploy-template.sh > template-deploy.yaml
+          ./deploy-template.sh > template.yaml
         shell: bash
         env:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
@@ -49,7 +49,7 @@ jobs:
       - run: ls
       - run: pwd ./template-deploy.yaml
       - run: pwd template.yaml
-      - run: sam build --template-file template-deploy.yaml --use-container
+      - run: sam build --use-container
       - run: ls
       - run: ls .aws-sam
       - run: ls ./.aws-sam/build
@@ -61,5 +61,5 @@ jobs:
       - run: ls ./.aws-sam/build/ProfileApiFunction/br/com/santos/vinicius/nifflerapi/config
       - run: ls ./.aws-sam/build/ProfileApiFunction/br/com/santos/vinicius/nifflerapi/config/handler
       # sam deploy
-      - run: sam deploy --template template-deploy.yaml
+      - run: sam deploy
       - run: rm template-deploy.yaml

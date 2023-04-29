@@ -1,16 +1,41 @@
 #!/usr/bin/env bash
 
-ENV_VARS="Environment:
-        Variables:
-          JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
-          TWITCH_AUTH_BASE_URL: ${TWITCH_AUTH_BASE_URL}
-          TWITCH_HELIX_BASE_URL: ${TWITCH_HELIX_BASE_URL}
-          CLIENT_ID: ${CLIENT_ID}
-          CLIENT_SECRET: ${CLIENT_SECRET}
-          AWS__ACCESS_KEY: ${AWS__ACCESS_KEY}
-          AWS__SECRET_KEY: ${AWS__SECRET_KEY}
-          STAGE_URL: ${STAGE_URL}
-          PROD_URL: ${PROD_URL}"
-TEMPLATE=$(cat template.yaml)
+TEMPLATE="AWSTemplateFormatVersion: '2010-09-09'
+          Transform: AWS::Serverless-2016-10-31
 
-echo -e "${TEMPLATE/\#\$ENVIRONMENT/$ENV_VARS}"
+          Globals:
+            Function:
+              Timeout: 30
+
+          Resources:
+            ProfileApiFunction:
+              Type: AWS::Serverless::Function
+              Properties:
+                CodeUri: .
+                Handler: br.com.santos.vinicius.nifflerapi.config.handler.LambdaHandler::handleRequest
+                Runtime: java11
+                AutoPublishAlias: production
+                SnapStart:
+                  ApplyOn: PublishedVersions
+                Architectures:
+                  - x86_64
+                MemorySize: 2048
+                Environment:
+                  Variables:
+                    JAVA_TOOL_OPTIONS: -XX:+TieredCompilation -XX:TieredStopAtLevel=1
+                    TWITCH_AUTH_BASE_URL: ${TWITCH_AUTH_BASE_URL}
+                    TWITCH_HELIX_BASE_URL: ${TWITCH_HELIX_BASE_URL}
+                    CLIENT_ID: ${CLIENT_ID}
+                    CLIENT_SECRET: ${CLIENT_SECRET}
+                    AWS__ACCESS_KEY: ${AWS__ACCESS_KEY}
+                    AWS__SECRET_KEY: ${AWS__SECRET_KEY}
+                    STAGE_URL: ${STAGE_URL}
+                    PROD_URL: ${PROD_URL}
+                Events:
+                  Blacklist:
+                    Type: Api
+                    Properties:
+                      Path: /{proxy+}
+                      Method: ANY"
+
+echo -e "${TEMPLATE}"
