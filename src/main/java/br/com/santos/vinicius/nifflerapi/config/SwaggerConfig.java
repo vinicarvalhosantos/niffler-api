@@ -14,11 +14,11 @@ import java.util.List;
 @Configuration
 public class SwaggerConfig {
 
-    @Value("${niffler.api.development.url}")
-    String developmentUrl;
+    @Value("${niffler.api.local.dev.url}")
+    String localDevUrl;
 
-    @Value("${niffler.api.stage.url}")
-    String stageUrl;
+    @Value("${niffler.api.dev.url}")
+    String devUrl;
 
     @Value("${niffler.api.production.url}")
     String productionUrl;
@@ -26,11 +26,11 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI myOpenApi() {
         Server developmentServer = new Server();
-        developmentServer.setUrl(developmentUrl);
+        developmentServer.setUrl(localDevUrl);
         developmentServer.setDescription("Niffler API Development");
 
         Server stageServer = new Server();
-        stageServer.setUrl(stageUrl);
+        stageServer.setUrl(devUrl);
         stageServer.setDescription("Niffler API Staged");
 
         Server productionServer = new Server();
