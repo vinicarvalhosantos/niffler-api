@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
         if (userDto.isValidUserId()) {
             user = fetchUserByUserId(userDto.getUserId());
         } else {
-            user = fetchUserByUsername(userDto.getDisplayName());
+            user = fetchUserByUsername(userDto.getDisplayName().toLowerCase()); //All username is the display name but in lower case.
         }
 
         if (user == null) {
