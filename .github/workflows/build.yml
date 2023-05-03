@@ -16,7 +16,7 @@ jobs:
       CLIENT_ID: ${{secrets.CLIENT_ID}},
       CLIENT_SECRET: ${{secrets.CLIENT_SECRET}},
       PROD_URL: ${{secrets.PROD_URL}},
-      STAGE_URL: ${{secrets.STAGE_URL}},
+      DEV_URL: ${{secrets.DEV_URL}},
       TWITCH_AUTH_BASE_URL: ${{secrets.TWITCH_AUTH_BASE_URL}},
       TWITCH_HELIX_BASE_URL: ${{secrets.TWITCH_HELIX_BASE_URL}},
     name: Unit tests
@@ -107,7 +107,7 @@ jobs:
           CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
           AWS__ACCESS_KEY: ${{secrets.AWS__ACCESS_KEY}}
           AWS__SECRET_KEY: ${{secrets.AWS__SECRET_KEY}}
-          STAGE_URL: ${{secrets.STAGE_URL}}
+          DEV_URL: ${{secrets.DEV_URL}}
           PROD_URL: ${{secrets.PROD_URL}}
       # sam build
       - name: SAM Build

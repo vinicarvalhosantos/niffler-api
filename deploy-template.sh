@@ -29,7 +29,7 @@ Resources:
           CLIENT_SECRET: ${CLIENT_SECRET}
           AWS__ACCESS_KEY: ${AWS__ACCESS_KEY}
           AWS__SECRET_KEY: ${AWS__SECRET_KEY}
-          STAGE_URL: ${STAGE_URL}
+          DEV_URL: ${DEV_URL}
           PROD_URL: ${PROD_URL}
       Events:
         Blacklist:
