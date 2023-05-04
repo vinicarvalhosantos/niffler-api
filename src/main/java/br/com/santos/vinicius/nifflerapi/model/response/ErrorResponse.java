@@ -22,10 +22,6 @@ public class ErrorResponse implements Serializable {
 
     private Timestamp timestamp;
 
-
-    public ErrorResponse() {
-    }
-
     public ErrorResponse(String message, int status, String error) {
         this.message = message;
         this.status = status;
