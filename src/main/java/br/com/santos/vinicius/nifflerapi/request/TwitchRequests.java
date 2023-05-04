@@ -15,11 +15,15 @@ public interface TwitchRequests {
                                           @Query("grant_type") String grantType);
 
     @GET("users")
-    Call<TwitchUserModel> getTwitchUserByLogin(@Query("login") String username, @Header("Authorization") String authHeader,
-                                        @Header("client-id") String clientId);
+    Call<TwitchUserModel> getTwitchUserByLogin(@Header("Authorization") String authHeader, @Header("client-id") String clientId,
+                                               @Query("login") String username);
 
     @GET("users")
-    Call<TwitchUserModel> getTwitchUserById(@Query("id") String userId, @Header("Authorization") String authHeader,
-                                        @Header("client-id") String clientId);
+    Call<TwitchUserModel> getTwitchUserById(@Header("Authorization") String authHeader, @Header("client-id") String clientId,
+                                            @Query("id") String userId);
+
+    @GET("users")
+    Call<TwitchUserModel> getTwitchUsersByIds(@Header("Authorization") String authHeader, @Header("client-id") String clientId,
+                                              @Query("id") String... userId);
 
 }

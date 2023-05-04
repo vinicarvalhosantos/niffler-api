@@ -38,7 +38,7 @@ public class BlacklistServiceImpl implements BlacklistService {
         UserEntity user = userService.fetchUserByUsername(username);
 
         if (user == null) {
-            ErrorResponse errorResponse = new ErrorResponse("This user does not a valid user", 404, HttpStatus.NOT_FOUND.name());
+            ErrorResponse errorResponse = new ErrorResponse("This user is not valid.", 404, HttpStatus.NOT_FOUND.name());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(errorResponse));
         }
 

@@ -14,7 +14,7 @@ Resources:
       CodeUri: .
       Handler: br.com.santos.vinicius.nifflerapi.config.handler.LambdaHandler::handleRequest
       Runtime: java11
-      AutoPublishAlias: production
+      AutoPublishAlias: live
       SnapStart:
         ApplyOn: PublishedVersions
       Architectures:

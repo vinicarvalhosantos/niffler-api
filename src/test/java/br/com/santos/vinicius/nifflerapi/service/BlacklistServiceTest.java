@@ -41,9 +41,6 @@ public class BlacklistServiceTest {
     @MockBean
     UserRepository userRepository;
 
-    @MockBean
-    BlacklistEntity blacklistEntity;
-
     @Test
     public void it_should_add_user_in_blacklist() throws Exception {
 

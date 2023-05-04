@@ -1,7 +1,5 @@
 package br.com.santos.vinicius.nifflerapi.controller;
 
-import br.com.santos.vinicius.nifflerapi.model.dto.BlacklistDto;
-import br.com.santos.vinicius.nifflerapi.model.dto.UserDto;
 import br.com.santos.vinicius.nifflerapi.model.response.ErrorResponse;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
 import br.com.santos.vinicius.nifflerapi.model.response.SuccessResponse;
@@ -12,7 +10,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,9 +29,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ErrorResponse.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ErrorResponse.class), mediaType = "application/json")})
     })
-    @PostMapping("")
-    public ResponseEntity<Response> createUser(@RequestBody UserDto userDto) throws IOException {
-        return userService.createUser(userDto);
+    @GetMapping("")
+    public ResponseEntity<Response> getAllUsers() throws IOException {
+        return userService.getAllUsers();
     }
 
     @ApiResponses({
@@ -43,9 +40,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ErrorResponse.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ErrorResponse.class), mediaType = "application/json")})
     })
-    @GetMapping("")
-    public ResponseEntity<Response> getAllUsers() throws IOException {
-        return userService.getAllUsers();
+    @PutMapping("/fetch")
+    public ResponseEntity<Response> fetchUsers() throws IOException, InterruptedException {
+        return userService.fetchAllUsers();
     }
 
 }
