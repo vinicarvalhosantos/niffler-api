@@ -14,7 +14,7 @@ public interface UserService {
 
     ResponseEntity<Response> getAllUsers() throws IOException;
 
-    ResponseEntity<Response> fetchAllUsers() throws IOException;
+    ResponseEntity<Response> fetchAllUsers() throws IOException, InterruptedException;
 
     UserEntity fetchUserByUsername(String username) throws IOException;
 

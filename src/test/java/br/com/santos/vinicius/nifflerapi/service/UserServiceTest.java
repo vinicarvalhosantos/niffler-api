@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -76,7 +77,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void it_should_fetch_users() throws IOException {
+    public void it_should_fetch_users() throws IOException, InterruptedException {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
         String thirdRandomUUID = UUID.randomUUID().toString();
@@ -110,7 +111,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void it_should_fetch_any_users() throws IOException {
+    public void it_should_fetch_any_users() throws IOException, InterruptedException {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
         String thirdRandomUUID = UUID.randomUUID().toString();
@@ -144,7 +145,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void it_should_fetch_only_one_user() throws IOException {
+    public void it_should_fetch_only_one_user() throws IOException, InterruptedException {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
         String thirdRandomUUID = UUID.randomUUID().toString();
@@ -178,7 +179,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void it_should_fetch_when_user_is_deleted() throws IOException {
+    public void it_should_fetch_when_user_is_deleted() throws IOException, InterruptedException {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
         String thirdRandomUUID = UUID.randomUUID().toString();
@@ -217,7 +218,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void it_should_fetch_when_bad_request() throws IOException {
+    public void it_should_fetch_when_bad_request() throws IOException, InterruptedException {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
         String thirdRandomUUID = UUID.randomUUID().toString();

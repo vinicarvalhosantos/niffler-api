@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<Response> fetchAllUsers() throws IOException {
+    public ResponseEntity<Response> fetchAllUsers() throws IOException, InterruptedException {
         log.info("Fetching all users in database.");
         List<UserEntity> userEntityList = IteratorUtils.toList(userRepository.findAll().iterator());
 
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
         return fetchUser(userEntity, twitchUser);
     }
 
-    private ResponseEntity<Response> fetchUsersExisting(TwitchUserModel twitchUsers, List<UserEntity> userEntityList) {
+    private ResponseEntity<Response> fetchUsersExisting(TwitchUserModel twitchUsers, List<UserEntity> userEntityList) throws InterruptedException {
         int numberOfUsersUpdated = fetchUsers(twitchUsers.getData(), userEntityList);
         String message = extractMessage(numberOfUsersUpdated);
 
@@ -101,15 +101,15 @@ public class UserServiceImpl implements UserService {
         return getUserFetched(userEntity, twitchUser);
     }
 
-    private int fetchUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) {
+    private int fetchUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) throws InterruptedException {
         List<UserEntity> usersDifferent = extractDifferentUsers(twitchUserModelDataList, userEntityList);
         List<UserEntity> usersDeleted = extractDeletedUsers(twitchUserModelDataList, userEntityList);
 
-        if (usersDifferent.size() != 0) {
+        if (!usersDifferent.isEmpty()) {
             saveAllUsers(usersDifferent);
         }
 
-        if (usersDeleted.size() != 0) {
+        if (!usersDeleted.isEmpty()) {
             deleteAllUsersDeleted(usersDeleted);
         }
 
@@ -203,7 +203,7 @@ public class UserServiceImpl implements UserService {
         return usersDeleted;
     }
 
-    private void saveAllUsers(List<UserEntity> usersToBeUpdated) {
+    private void saveAllUsers(List<UserEntity> usersToBeUpdated) throws InterruptedException {
         log.info("Updating all different users.");
         ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_TRHEADS);
 
@@ -214,13 +214,13 @@ public class UserServiceImpl implements UserService {
 
             executor.awaitTermination(10000L, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new InterruptedException();
         }
 
         log.info("Updated all users.");
     }
 
-    private void deleteAllUsersDeleted(List<UserEntity> usersToBeUpdated) {
+    private void deleteAllUsersDeleted(List<UserEntity> usersToBeUpdated) throws InterruptedException {
         log.info("Deleting all deleted users from twitch.");
         ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_TRHEADS);
 
@@ -231,7 +231,7 @@ public class UserServiceImpl implements UserService {
 
             executor.awaitTermination(10000L, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new InterruptedException();
         }
 
         log.info("Deleted all users.");
