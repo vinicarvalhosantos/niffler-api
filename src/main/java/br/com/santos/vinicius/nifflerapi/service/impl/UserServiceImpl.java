@@ -238,9 +238,9 @@ public class UserServiceImpl implements UserService {
     }
 
     private String extractMessage(int numberOfUsersUpdated) {
-        return (numberOfUsersUpdated == 1) ? "A user was updated."
-                : (numberOfUsersUpdated > 1) ? String.format("%d users were updated.", numberOfUsersUpdated)
-                : "Any users were found to be updated.";
+        if (numberOfUsersUpdated == 1) return "A user was updated.";
+        if (numberOfUsersUpdated > 1) return String.format("%d users were updated.", numberOfUsersUpdated);
+        return "Any users were found to be updated.";
     }
 
     private List<Object> formatRecords(List<UserEntity> userEntityList) {
