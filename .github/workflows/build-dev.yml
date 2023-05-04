@@ -1,5 +1,5 @@
 #Workflow name
-name: CI/CD Pipeline Build & Deploy
+name: CI/CD Pipeline Build & Deploy Development
 on:
   workflow_dispatch:
   push:
@@ -41,6 +41,16 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       #Run Tests
       - name: Run Tests
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          TWITCH_AUTH_BASE_URL: ${{secrets.TWITCH_AUTH_BASE_URL}}
+          TWITCH_HELIX_BASE_URL: ${{secrets.TWITCH_HELIX_BASE_URL}}
+          CLIENT_ID: ${{secrets.CLIENT_ID}}
+          CLIENT_SECRET: ${{secrets.CLIENT_SECRET}}
+          AWS__ACCESS_KEY: ${{secrets.AWS__ACCESS_KEY}}
+          AWS__SECRET_KEY: ${{secrets.AWS__SECRET_KEY}}
+          DEV_URL: ${{secrets.DEV_URL}}
+          PROD_URL: ${{secrets.PROD_URL}}
         run: mvn -B test
   sonar:
     needs: tests

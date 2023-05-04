@@ -1,5 +1,5 @@
 #Workflow name
-name: CI/CD Pipeline Build & Deploy
+name: CI/CD Pipeline Build & Deploy Production
 on:
   workflow_dispatch:
   push:
