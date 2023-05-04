@@ -41,7 +41,7 @@ public class UserController {
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ErrorResponse.class), mediaType = "application/json")})
     })
     @PutMapping("/fetch")
-    public ResponseEntity<Response> fetchUsers() throws IOException {
+    public ResponseEntity<Response> fetchUsers() throws IOException, InterruptedException {
         return userService.fetchAllUsers();
     }
 
