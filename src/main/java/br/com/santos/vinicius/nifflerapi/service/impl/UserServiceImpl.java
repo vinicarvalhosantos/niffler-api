@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     String CLIENT_ID;
 
     @Value("${threads.to.be.used}")
-    private int NUMBER_OF_TRHEADS;
+    private int numberOfThreads;
 
     @Override
     public ResponseEntity<Response> getAllUsers() {
@@ -205,7 +205,7 @@ public class UserServiceImpl implements UserService {
 
     private void saveAllUsers(List<UserEntity> usersToBeUpdated) throws InterruptedException {
         log.info("Updating all different users.");
-        ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_TRHEADS);
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
 
         try {
             Runnable worker = new UserSaveRunnable(usersToBeUpdated, userRepository);
@@ -222,7 +222,7 @@ public class UserServiceImpl implements UserService {
 
     private void deleteAllUsersDeleted(List<UserEntity> usersToBeUpdated) throws InterruptedException {
         log.info("Deleting all deleted users from twitch.");
-        ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_TRHEADS);
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
 
         try {
             Runnable worker = new UserDeleteRunnable(usersToBeUpdated, userRepository);
