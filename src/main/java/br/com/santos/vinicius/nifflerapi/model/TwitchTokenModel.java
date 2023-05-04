@@ -12,6 +12,7 @@ import java.io.Serializable;
 public class TwitchTokenModel implements Serializable {
 
     private static final long serialVersionUID = -221258559163507349L;
+
     private String access_token;
 
     private Long expires_in;

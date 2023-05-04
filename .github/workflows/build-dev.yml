@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - release/v*
   pull_request:
     types: [ opened, synchronize, reopened ]
 jobs:
@@ -109,6 +109,7 @@ jobs:
           AWS__SECRET_KEY: ${{secrets.AWS__SECRET_KEY}}
           DEV_URL: ${{secrets.DEV_URL}}
           PROD_URL: ${{secrets.PROD_URL}}
+          APP_STAGE: development
       # sam build
       - name: SAM Build
         run: sam build --use-container

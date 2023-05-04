@@ -26,23 +26,20 @@ public class TwitchToken {
     private static Date expiresAt;
 
     private TwitchToken() throws IOException {
-        log.debug("Requesting a new valid twitch token");
-
         TwitchTokenModel twitchTokenModel = this.getTwitchToken();
 
         Calendar expiresAt = Calendar.getInstance();
         Date now = new Date();
 
-        log.debug("Extracting informations from twitch's api response ");
         expiresAt.setTimeInMillis(now.getTime() + twitchTokenModel.getExpires_in());
         setExpiresAt(expiresAt.getTime());
         this.token = twitchTokenModel.getAccess_token();
-        log.debug("New valid twitch token stored");
+        log.info("New valid twitch token stored.");
     }
 
     public static TwitchToken getInstance() throws IOException {
 
-        log.debug("Checking if there is a valid twitch token");
+        log.info("Checking if there is a valid twitch token.");
         if (singleInstance == null && isExpiring()) {
             singleInstance = new TwitchToken();
         }
@@ -51,13 +48,9 @@ public class TwitchToken {
     }
 
     private static boolean isExpiring() {
-        log.info("Checking if the token expired");
         Date now = new Date();
-        if (expiresAt == null) {
-            return true;
-        }
-
-        if (expiresAt.after(now)) {
+        if (expiresAt == null || expiresAt.after(now)) {
+            log.info("Twitch token expired.");
             return true;
         }
 
@@ -68,12 +61,12 @@ public class TwitchToken {
     }
 
     private TwitchTokenModel getTwitchToken() throws IOException {
+        log.info("Requesting a new valid twitch token.");
 
         TwitchRequestsRetrofit requestsRetrofit = TwitchRequestsRetrofit.getInstance();
 
         TwitchRequests twitchRequests = requestsRetrofit.twitchAuthRequests;
 
-        log.debug("Sending a request to oauth twitch api");
         String GRANT_TYPE = "client_credentials";
         Call<TwitchTokenModel> twitchTokenModelCall = twitchRequests.getTwitchToken(CLIENT_ID, CLIENT_SECRET, GRANT_TYPE);
 
