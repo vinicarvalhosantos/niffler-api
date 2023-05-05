@@ -1,5 +1,6 @@
 package br.com.santos.vinicius.nifflerapi.service.impl;
 
+import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModel;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModelData;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
@@ -37,7 +38,7 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
 
     @Value("${twitch.client.id}")
-    String CLIENT_ID;
+    String clientId;
 
     @Value("${threads.to.be.used}")
     private int numberOfThreads;
@@ -48,9 +49,8 @@ public class UserServiceImpl implements UserService {
         List<UserEntity> userEntities = IteratorUtils.toList(userRepository.findAll().iterator());
 
         if (userEntities.isEmpty()) {
-            ErrorResponse errorResponse = new ErrorResponse("Any users in our database.", 404, HttpStatus.NOT_FOUND.name());
             log.info("Any users in our database.");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(errorResponse));
+            throw new NoSuchElementFoundException(HttpStatus.NOT_FOUND, "Any users in our database.");
         }
 
         SuccessResponse successResponse = new SuccessResponse(formatRecords(userEntities), "Users were found in our database");
@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserService {
         TwitchRequestsRetrofit requestsRetrofit = TwitchRequestsRetrofit.getInstance();
 
         final String AUTH_HEADER = String.format("Bearer %s", TOKEN);
-        Call<TwitchUserModel> twitchUserRequest = requestsRetrofit.twitchHelixRequests.getTwitchUserByLogin(AUTH_HEADER, CLIENT_ID, username);
+        Call<TwitchUserModel> twitchUserRequest = requestsRetrofit.twitchHelixRequests.getTwitchUserByLogin(AUTH_HEADER, clientId, username);
 
         return twitchUserRequest.execute().body();
     }
@@ -159,7 +159,7 @@ public class UserServiceImpl implements UserService {
 
         final String AUTH_HEADER = String.format("Bearer %s", TOKEN);
 
-        Call<TwitchUserModel> twitchUserRequest = requestsRetrofit.twitchHelixRequests.getTwitchUsersByIds(AUTH_HEADER, CLIENT_ID, userIds);
+        Call<TwitchUserModel> twitchUserRequest = requestsRetrofit.twitchHelixRequests.getTwitchUsersByIds(AUTH_HEADER, clientId, userIds);
 
         return twitchUserRequest.execute().body();
     }

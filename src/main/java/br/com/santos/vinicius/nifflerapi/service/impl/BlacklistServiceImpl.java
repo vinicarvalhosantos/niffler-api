@@ -1,5 +1,7 @@
 package br.com.santos.vinicius.nifflerapi.service.impl;
 
+import br.com.santos.vinicius.nifflerapi.exception.ElementAlreadyReportedException;
+import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.dto.BlacklistDto;
 import br.com.santos.vinicius.nifflerapi.model.entity.BlacklistEntity;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
@@ -43,8 +45,7 @@ public class BlacklistServiceImpl implements BlacklistService {
 
         if (user == null) {
             log.info("User does not exists in twitch base.");
-            ErrorResponse errorResponse = new ErrorResponse("This user is not valid.", 404, HttpStatus.NOT_FOUND.name());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(errorResponse));
+            throw new NoSuchElementFoundException(HttpStatus.NOT_FOUND, String.format("User '%s' does not exists", username));
         }
 
         Optional<BlacklistEntity> blacklistEntityOptional = blacklistRepository.findByUserId(user.getUserId());
@@ -58,17 +59,15 @@ public class BlacklistServiceImpl implements BlacklistService {
         }
 
         BlacklistEntity blacklistEntity = blacklistEntityOptional.get();
-        if (!blacklistEntity.equalsTwitchUser(user)) {
-            blacklistEntity.setUsername(user.getUsername());
-            blacklistRepository.save(blacklistEntity);
-            SuccessResponse successResponse = new SuccessResponse(List.of(blacklistEntity), "User updated in blacklist.");
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(new Response(successResponse));
+        if (blacklistEntity.equalsTwitchUser(user)) {
+            throw new ElementAlreadyReportedException(HttpStatus.ALREADY_REPORTED, String.format("User '%s' already in blacklist.", username));
         }
 
-        ErrorResponse errorResponse = new ErrorResponse("This user already exists in the blacklist", 208, "ALREADY_REPORTED");
+        blacklistEntity.setUsername(user.getUsername());
+        blacklistRepository.save(blacklistEntity);
+        SuccessResponse successResponse = new SuccessResponse(List.of(blacklistEntity), "User updated in blacklist.");
 
-        return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(new Response(errorResponse));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new Response(successResponse));
     }
 
     @Override

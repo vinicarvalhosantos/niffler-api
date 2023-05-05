@@ -12,18 +12,18 @@ import java.util.Date;
 @Slf4j
 public class TwitchToken {
 
-    private final String CLIENT_ID = System.getenv("CLIENT_ID");
+    private final String clientId = System.getenv("CLIENT_ID");
 
 
-    private final String CLIENT_SECRET = System.getenv("CLIENT_SECRET");
+    private final String clientSecret = System.getenv("CLIENT_SECRET");
 
     private static final Long PRE_TOKEN_EXPIRED = 5L; //In minutes
 
     private static TwitchToken singleInstance = null;
 
-    public String token;
+    public final String token;
 
-    private static Date expiresAt;
+    private static Date tokenExpiresIn;
 
     private TwitchToken() throws IOException {
         TwitchTokenModel twitchTokenModel = this.getTwitchToken();
@@ -32,7 +32,7 @@ public class TwitchToken {
         Date now = new Date();
 
         expiresAt.setTimeInMillis(now.getTime() + twitchTokenModel.getExpires_in());
-        setExpiresAt(expiresAt.getTime());
+        setTokenExpiresIn(expiresAt.getTime());
         this.token = twitchTokenModel.getAccess_token();
         log.info("New valid twitch token stored.");
     }
@@ -49,13 +49,13 @@ public class TwitchToken {
 
     private static boolean isExpiring() {
         Date now = new Date();
-        if (expiresAt == null || expiresAt.after(now)) {
+        if (tokenExpiresIn == null || tokenExpiresIn.after(now)) {
             log.info("Twitch token expired.");
             return true;
         }
 
 
-        long differenceInSeconds = (now.getTime() - expiresAt.getTime()) / 1000;
+        long differenceInSeconds = (now.getTime() - tokenExpiresIn.getTime()) / 1000;
 
         return differenceInSeconds <= (60 * PRE_TOKEN_EXPIRED);
     }
@@ -67,14 +67,14 @@ public class TwitchToken {
 
         TwitchRequests twitchRequests = requestsRetrofit.twitchAuthRequests;
 
-        String GRANT_TYPE = "client_credentials";
-        Call<TwitchTokenModel> twitchTokenModelCall = twitchRequests.getTwitchToken(CLIENT_ID, CLIENT_SECRET, GRANT_TYPE);
+        final String GRANT_TYPE = "client_credentials";
+        Call<TwitchTokenModel> twitchTokenModelCall = twitchRequests.getTwitchToken(clientId, clientSecret, GRANT_TYPE);
 
 
         return twitchTokenModelCall.execute().body();
     }
 
-    public static void setExpiresAt(Date expiresAt) {
-        TwitchToken.expiresAt = expiresAt;
+    public static void setTokenExpiresIn(Date tokenExpiresIn) {
+        TwitchToken.tokenExpiresIn = tokenExpiresIn;
     }
 }

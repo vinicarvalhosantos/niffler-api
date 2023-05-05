@@ -9,9 +9,9 @@ public class TwitchRequestsRetrofit {
 
     private static TwitchRequestsRetrofit singleInstance = null;
 
-    public TwitchRequests twitchAuthRequests;
+    public final TwitchRequests twitchAuthRequests;
 
-    public TwitchRequests twitchHelixRequests;
+    public final TwitchRequests twitchHelixRequests;
 
     private TwitchRequestsRetrofit() {
         final String BASE_AUTH_URL = System.getenv("TWITCH_AUTH_BASE_URL");
