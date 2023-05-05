@@ -1,5 +1,7 @@
 package br.com.santos.vinicius.nifflerapi.controller;
 
+import br.com.santos.vinicius.nifflerapi.exception.ElementAlreadyReportedException;
+import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModel;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModelData;
 import br.com.santos.vinicius.nifflerapi.model.dto.BlacklistDto;
@@ -318,6 +320,61 @@ public class BlacklistControllerTest {
                 .andExpect(jsonPath("$.data.records.[2].userId").value("5554787"));
 
 
+    }
+
+    @Test(expected = NoSuchElementFoundException.class)
+    public void it_should_throw_not_found_exception() throws Exception {
+
+        when(blacklistService.getAllUsersInBlacklist()).thenThrow(NoSuchElementFoundException.class);
+
+        blacklistService.getAllUsersInBlacklist();
+
+        mockMvc.perform(get("/v2/blacklist")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
+
+    @Test(expected = ElementAlreadyReportedException.class)
+    public void it_should_throw_already_reported_exception() throws Exception {
+
+        BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
+
+        String randomUUID = UUID.randomUUID().toString();
+        Date createdAt = new Date();
+
+        blacklistEntityExpected.setUserId(55547L);
+        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUsername("username_test");
+        blacklistEntityExpected.setCreatedAt(createdAt);
+
+        String randomUserUUID = UUID.randomUUID().toString();
+
+        UserEntity user = new UserEntity(55547L, "username_test", "username_test", 0.0, 0.0);
+        user.setId(randomUserUUID);
+        user.setCreatedAt(createdAt);
+
+        BlacklistDto blacklistDtoRequest = new BlacklistDto("username_test");
+
+        TwitchUserModelData data = new TwitchUserModelData();
+        data.setId("55547");
+        data.setLogin("username_test");
+        data.setDisplay_name("username_test");
+        TwitchUserModel twitchUser = new TwitchUserModel();
+        twitchUser.setData(List.of(data));
+
+        when(blacklistService.addUserInBlacklist(any(BlacklistDto.class))).thenThrow(ElementAlreadyReportedException.class);
+
+        blacklistService.addUserInBlacklist(blacklistDtoRequest);
+
+        ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
+        String requestBody = objectWriter.writeValueAsString(blacklistDtoRequest);
+
+        mockMvc.perform(post("/v2/blacklist/")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isAlreadyReported());
     }
 
 }

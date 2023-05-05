@@ -1,5 +1,6 @@
 package br.com.santos.vinicius.nifflerapi.controller;
 
+import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModel;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModelData;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
@@ -138,6 +139,22 @@ public class UserControllerTest {
         requestResponse = userService.getAllUsers();
 
         assertNotNull(requestResponse);
+
+        mockMvc.perform(get("/v2/user")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.data.message").value("Any users in our database."))
+                .andExpect(jsonPath("$.data.status").value("404"))
+                .andExpect(jsonPath("$.data.error").value("NOT_FOUND"));
+
+    }
+
+    @Test(expected = NoSuchElementFoundException.class)
+    public void it_should_throw_not_found_exception() throws Exception {
+
+        when(userService.getAllUsers()).thenThrow(NoSuchElementFoundException.class);
+        userService.getAllUsers();
 
         mockMvc.perform(get("/v2/user")
                         .contentType(MediaType.APPLICATION_JSON))
