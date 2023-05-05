@@ -1,5 +1,7 @@
 package br.com.santos.vinicius.nifflerapi.service;
 
+import br.com.santos.vinicius.nifflerapi.exception.ElementAlreadyReportedException;
+import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModel;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModelData;
 import br.com.santos.vinicius.nifflerapi.model.dto.BlacklistDto;
@@ -21,6 +23,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -82,7 +85,7 @@ public class BlacklistServiceTest {
         assertEquals(HttpStatus.CREATED, requestResponse.getStatusCode());
     }
 
-    @Test
+    @Test(expected = NoSuchElementFoundException.class)
     public void it_should_NOT_add_user_in_blacklist_user_does_not_exists() throws Exception {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
@@ -113,10 +116,8 @@ public class BlacklistServiceTest {
         when(userService.fetchUserByUsername(any(String.class))).thenReturn(null);
         when(userService.getTwitchUser(any(String.class))).thenReturn(twitchUser);
 
-        ResponseEntity<Response> requestResponse = blacklistService.addUserInBlacklist(blacklistDtoRequest);
+        blacklistService.addUserInBlacklist(blacklistDtoRequest);
 
-        assertNotNull(requestResponse);
-        assertEquals(HttpStatus.NOT_FOUND, requestResponse.getStatusCode());
     }
 
     @Test
@@ -161,7 +162,7 @@ public class BlacklistServiceTest {
         assertEquals(HttpStatus.CREATED, requestResponse.getStatusCode());
     }
 
-    @Test
+    @Test(expected = ElementAlreadyReportedException.class)
     public void it_should_NOT_ad_user_in_blacklist_when_user_ALREADY_in_blacklist() throws Exception {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
@@ -197,10 +198,7 @@ public class BlacklistServiceTest {
         when(userService.fetchUserByUsername(any(String.class))).thenReturn(user);
         when(userService.getTwitchUser(any(String.class))).thenReturn(twitchUser);
 
-        ResponseEntity<Response> requestResponse = blacklistService.addUserInBlacklist(blacklistDtoRequest);
-
-        assertNotNull(requestResponse);
-        assertEquals(HttpStatus.ALREADY_REPORTED, requestResponse.getStatusCode());
+        blacklistService.addUserInBlacklist(blacklistDtoRequest);
     }
 
     @Test

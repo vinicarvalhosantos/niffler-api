@@ -1,5 +1,6 @@
 package br.com.santos.vinicius.nifflerapi.service;
 
+import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
 import br.com.santos.vinicius.nifflerapi.repository.UserRepository;
@@ -66,14 +67,12 @@ public class UserServiceTest {
         assertEquals(HttpStatus.OK, requestResponse.getStatusCode());
     }
 
-    @Test
+    @Test(expected = NoSuchElementFoundException.class)
     public void it_should_have_any_user_registered() throws IOException {
         when(userRepository.findAll()).thenReturn(Collections.emptyList());
 
-        ResponseEntity<Response> requestResponse = userService.getAllUsers();
+        userService.getAllUsers();
 
-        assertNotNull(requestResponse);
-        assertEquals(HttpStatus.NOT_FOUND, requestResponse.getStatusCode());
     }
 
     @Test
