@@ -177,7 +177,7 @@ public class UserServiceImpl implements UserService {
                 usersDifferent.add(userDifferent.get(0).fetchUserFromTwitchUser(userModelData));
         }
 
-        log.info("Found " + usersDifferent.size() + " users to be updated.");
+        log.info("Found {} users to be updated.", usersDifferent.size());
         return usersDifferent;
     }
 

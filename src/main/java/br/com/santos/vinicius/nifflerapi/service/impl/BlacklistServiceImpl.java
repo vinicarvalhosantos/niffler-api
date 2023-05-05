@@ -9,6 +9,7 @@ import br.com.santos.vinicius.nifflerapi.model.response.SuccessResponse;
 import br.com.santos.vinicius.nifflerapi.repository.BlacklistRepository;
 import br.com.santos.vinicius.nifflerapi.service.BlacklistService;
 import br.com.santos.vinicius.nifflerapi.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.IteratorUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
+@Slf4j
 public class BlacklistServiceImpl implements BlacklistService {
 
     @Autowired
@@ -33,11 +35,14 @@ public class BlacklistServiceImpl implements BlacklistService {
 
     @Override
     public ResponseEntity<Response> addUserInBlacklist(BlacklistDto blacklistDto) throws IOException {
-        String username = blacklistDto.getUsername();
+        log.info("Start adding user in blacklist.");
+        String username = blacklistDto.getUsername().toLowerCase();
 
+        log.info("Fetching user by username within our database with twitch base.");
         UserEntity user = userService.fetchUserByUsername(username);
 
         if (user == null) {
+            log.info("User does not exists in twitch base.");
             ErrorResponse errorResponse = new ErrorResponse("This user is not valid.", 404, HttpStatus.NOT_FOUND.name());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(errorResponse));
         }
