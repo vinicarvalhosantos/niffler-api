@@ -37,7 +37,7 @@ public class UserController {
     public ResponseEntity<Response> handleNoSuchElementFound(NoSuchElementFoundException exception) {
         ErrorResponse errorResponse = new ErrorResponse(exception.getMessage(), HttpStatus.NOT_FOUND.value(), HttpStatus.NOT_FOUND.name());
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(errorResponse));
+        return ResponseEntity.status(exception.getStatus()).body(new Response(errorResponse));
     }
 
 }

@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -322,12 +323,11 @@ public class BlacklistControllerTest {
 
     }
 
-    @Test(expected = NoSuchElementFoundException.class)
+    @Test
     public void it_should_throw_not_found_exception() throws Exception {
 
-        when(blacklistService.getAllUsersInBlacklist()).thenThrow(NoSuchElementFoundException.class);
+        when(blacklistService.getAllUsersInBlacklist()).thenThrow(new NoSuchElementFoundException(HttpStatus.NOT_FOUND, "User batata does not exists."));
 
-        blacklistService.getAllUsersInBlacklist();
 
         mockMvc.perform(get("/v2/blacklist")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -335,7 +335,7 @@ public class BlacklistControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @Test(expected = ElementAlreadyReportedException.class)
+    @Test
     public void it_should_throw_already_reported_exception() throws Exception {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
@@ -363,18 +363,19 @@ public class BlacklistControllerTest {
         TwitchUserModel twitchUser = new TwitchUserModel();
         twitchUser.setData(List.of(data));
 
-        when(blacklistService.addUserInBlacklist(any(BlacklistDto.class))).thenThrow(ElementAlreadyReportedException.class);
-
-        blacklistService.addUserInBlacklist(blacklistDtoRequest);
+        when(blacklistService.addUserInBlacklist(any(BlacklistDto.class))).thenThrow(new ElementAlreadyReportedException(HttpStatus.ALREADY_REPORTED, "User batata already in blacklist."));
 
         ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
         String requestBody = objectWriter.writeValueAsString(blacklistDtoRequest);
 
-        mockMvc.perform(post("/v2/blacklist/")
+        assertThrows(ElementAlreadyReportedException.class, () -> blacklistService.addUserInBlacklist(blacklistDtoRequest));
+
+        mockMvc.perform(post("/v2/blacklist")
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isAlreadyReported());
+
     }
 
 }

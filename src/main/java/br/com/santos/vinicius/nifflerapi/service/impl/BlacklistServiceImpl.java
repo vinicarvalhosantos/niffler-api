@@ -45,7 +45,7 @@ public class BlacklistServiceImpl implements BlacklistService {
 
         if (user == null) {
             log.info("User does not exists in twitch base.");
-            throw new NoSuchElementFoundException(HttpStatus.NOT_FOUND, String.format("User '%s' does not exists", username));
+            throw new NoSuchElementFoundException(HttpStatus.NOT_FOUND, String.format("User '%s' does not exists.", username));
         }
 
         Optional<BlacklistEntity> blacklistEntityOptional = blacklistRepository.findByUserId(user.getUserId());

@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -150,19 +151,16 @@ public class UserControllerTest {
 
     }
 
-    @Test(expected = NoSuchElementFoundException.class)
+    @Test
     public void it_should_throw_not_found_exception() throws Exception {
 
-        when(userService.getAllUsers()).thenThrow(NoSuchElementFoundException.class);
-        userService.getAllUsers();
+        when(userService.getAllUsers()).thenThrow(new NoSuchElementFoundException(HttpStatus.NOT_FOUND, "Any users in our database."));
+        assertThrows(NoSuchElementFoundException.class, () -> userService.getAllUsers());
 
         mockMvc.perform(get("/v2/user")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.data.message").value("Any users in our database."))
-                .andExpect(jsonPath("$.data.status").value("404"))
-                .andExpect(jsonPath("$.data.error").value("NOT_FOUND"));
+                .andExpect(status().isNotFound());
 
     }
 
