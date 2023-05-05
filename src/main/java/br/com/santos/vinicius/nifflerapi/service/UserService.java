@@ -12,9 +12,9 @@ import java.util.List;
 @Service
 public interface UserService {
 
-    ResponseEntity<Response> getAllUsers() throws IOException;
+    ResponseEntity<Response> getAllUsers();
 
-    ResponseEntity<Response> fetchAllUsers() throws IOException, InterruptedException;
+    ResponseEntity<Response> fetchAllUsers() throws IOException;
 
     UserEntity fetchUserByUsername(String username) throws IOException;
 

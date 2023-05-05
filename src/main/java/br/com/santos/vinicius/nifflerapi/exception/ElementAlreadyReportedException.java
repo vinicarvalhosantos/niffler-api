@@ -8,7 +8,7 @@ public class ElementAlreadyReportedException extends ResponseStatusException {
 
     private static final long serialVersionUID = -6192310459083155821L;
 
-    public ElementAlreadyReportedException(HttpStatus status, String reason) {
-        super(status, reason);
+    public ElementAlreadyReportedException(String reason) {
+        super(HttpStatus.ALREADY_REPORTED, reason);
     }
 }

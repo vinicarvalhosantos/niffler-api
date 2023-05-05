@@ -1,5 +1,6 @@
 package br.com.santos.vinicius.nifflerapi.service.impl;
 
+import br.com.santos.vinicius.nifflerapi.exception.InternalServerException;
 import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModel;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModelData;
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
         if (userEntities.isEmpty()) {
             log.info("Any users in our database.");
-            throw new NoSuchElementFoundException(HttpStatus.NOT_FOUND, "Any users in our database.");
+            throw new NoSuchElementFoundException("Any users in our database.");
         }
 
         SuccessResponse successResponse = new SuccessResponse(formatRecords(userEntities), "Users were found in our database");
@@ -59,7 +60,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<Response> fetchAllUsers() throws IOException, InterruptedException {
+    public ResponseEntity<Response> fetchAllUsers() throws IOException {
+
         log.info("Fetching all users in database.");
         List<UserEntity> userEntityList = IteratorUtils.toList(userRepository.findAll().iterator());
 
@@ -74,6 +76,7 @@ public class UserServiceImpl implements UserService {
 
         ErrorResponse errorResponse = new ErrorResponse("Twitch bad request.", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(errorResponse));
+
     }
 
     @Override
@@ -84,7 +87,7 @@ public class UserServiceImpl implements UserService {
         return fetchUser(userEntity, twitchUser);
     }
 
-    private ResponseEntity<Response> fetchUsersExisting(TwitchUserModel twitchUsers, List<UserEntity> userEntityList) throws InterruptedException {
+    private ResponseEntity<Response> fetchUsersExisting(TwitchUserModel twitchUsers, List<UserEntity> userEntityList) {
         int numberOfUsersUpdated = fetchUsers(twitchUsers.getData(), userEntityList);
         String message = extractMessage(numberOfUsersUpdated);
 
@@ -101,7 +104,7 @@ public class UserServiceImpl implements UserService {
         return getUserFetched(userEntity, twitchUser);
     }
 
-    private int fetchUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) throws InterruptedException {
+    private int fetchUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) {
         List<UserEntity> usersDifferent = extractDifferentUsers(twitchUserModelDataList, userEntityList);
         List<UserEntity> usersDeleted = extractDeletedUsers(twitchUserModelDataList, userEntityList);
 
@@ -147,12 +150,15 @@ public class UserServiceImpl implements UserService {
         Call<TwitchUserModel> twitchUserRequest = requestsRetrofit.twitchHelixRequests.getTwitchUserByLogin(AUTH_HEADER, clientId, username);
 
         return twitchUserRequest.execute().body();
+
     }
 
     @Override
     public TwitchUserModel getTwitchUsersByIds(List<UserEntity> userEntityList) throws IOException {
+
         String[] userIds = userEntityList.stream().map(userEntity -> userEntity.getUserId().toString()).toArray(String[]::new);
         TwitchToken twitchToken = TwitchToken.getInstance();
+
         final String TOKEN = twitchToken.token;
 
         TwitchRequestsRetrofit requestsRetrofit = TwitchRequestsRetrofit.getInstance();
@@ -162,6 +168,7 @@ public class UserServiceImpl implements UserService {
         Call<TwitchUserModel> twitchUserRequest = requestsRetrofit.twitchHelixRequests.getTwitchUsersByIds(AUTH_HEADER, clientId, userIds);
 
         return twitchUserRequest.execute().body();
+
     }
 
     private List<UserEntity> extractDifferentUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) {
@@ -203,38 +210,34 @@ public class UserServiceImpl implements UserService {
         return usersDeleted;
     }
 
-    private void saveAllUsers(List<UserEntity> usersToBeUpdated) throws InterruptedException {
+    private void saveAllUsers(List<UserEntity> usersToBeUpdated) {
         log.info("Updating all different users.");
-        ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
-
-        try {
-            Runnable worker = new UserSaveRunnable(usersToBeUpdated, userRepository);
-            executor.execute(worker);
-            executor.shutdown();
-
-            executor.awaitTermination(10000L, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            throw new InterruptedException();
-        }
+        Runnable worker = new UserSaveRunnable(usersToBeUpdated, userRepository);
+        executeARunnable(worker);
 
         log.info("Updated all users.");
     }
 
-    private void deleteAllUsersDeleted(List<UserEntity> usersToBeUpdated) throws InterruptedException {
+    private void deleteAllUsersDeleted(List<UserEntity> usersToBeUpdated) {
         log.info("Deleting all deleted users from twitch.");
-        ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
-
-        try {
-            Runnable worker = new UserDeleteRunnable(usersToBeUpdated, userRepository);
-            executor.execute(worker);
-            executor.shutdown();
-
-            executor.awaitTermination(10000L, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            throw new InterruptedException();
-        }
+        Runnable worker = new UserDeleteRunnable(usersToBeUpdated, userRepository);
+        executeARunnable(worker);
 
         log.info("Deleted all users.");
+    }
+
+    private void executeARunnable(Runnable worker) {
+        try {
+
+            ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+            executor.execute(worker);
+            executor.shutdown();
+            executor.awaitTermination(10000L, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            log.info("An error occurred when tried to execute multiple threads:\n{}", e.getMessage());
+            throw new InternalServerException(
+                    String.format("An error occurred when tried to execute multiple threads:%n%s", e.getMessage()));
+        }
     }
 
     private String extractMessage(int numberOfUsersUpdated) {

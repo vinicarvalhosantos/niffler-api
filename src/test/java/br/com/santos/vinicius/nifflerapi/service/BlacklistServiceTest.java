@@ -224,7 +224,7 @@ public class BlacklistServiceTest {
         assertEquals(HttpStatus.OK, requestResponse.getStatusCode());
     }
 
-    @Test
+    @Test(expected = NoSuchElementFoundException.class)
     public void it_should_not_found_user_from_blacklist_by_username() {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
@@ -270,7 +270,7 @@ public class BlacklistServiceTest {
         assertEquals(HttpStatus.OK, requestResponse.getStatusCode());
     }
 
-    @Test
+    @Test(expected = NoSuchElementFoundException.class)
     public void it_should_not_found_user_from_blacklist_by_userid() {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
@@ -376,7 +376,7 @@ public class BlacklistServiceTest {
         assertEquals(HttpStatus.OK, requestResponse.getStatusCode());
     }
 
-    @Test
+    @Test(expected = NoSuchElementFoundException.class)
     public void it_should_not_found_when_get_all_users_from_blacklist() {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();

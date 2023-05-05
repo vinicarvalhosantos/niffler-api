@@ -326,7 +326,7 @@ public class BlacklistControllerTest {
     @Test
     public void it_should_throw_not_found_exception() throws Exception {
 
-        when(blacklistService.getAllUsersInBlacklist()).thenThrow(new NoSuchElementFoundException(HttpStatus.NOT_FOUND, "User batata does not exists."));
+        when(blacklistService.getAllUsersInBlacklist()).thenThrow(new NoSuchElementFoundException("User batata does not exists."));
 
 
         mockMvc.perform(get("/v2/blacklist")
@@ -363,7 +363,7 @@ public class BlacklistControllerTest {
         TwitchUserModel twitchUser = new TwitchUserModel();
         twitchUser.setData(List.of(data));
 
-        when(blacklistService.addUserInBlacklist(any(BlacklistDto.class))).thenThrow(new ElementAlreadyReportedException(HttpStatus.ALREADY_REPORTED, "User batata already in blacklist."));
+        when(blacklistService.addUserInBlacklist(any(BlacklistDto.class))).thenThrow(new ElementAlreadyReportedException("User batata already in blacklist."));
 
         ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
         String requestBody = objectWriter.writeValueAsString(blacklistDtoRequest);

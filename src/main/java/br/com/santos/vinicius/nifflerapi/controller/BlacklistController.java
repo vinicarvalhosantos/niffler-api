@@ -1,15 +1,12 @@
 package br.com.santos.vinicius.nifflerapi.controller;
 
-import br.com.santos.vinicius.nifflerapi.exception.ElementAlreadyReportedException;
-import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
+import br.com.santos.vinicius.nifflerapi.controller.handler.ExceptionsHandler;
 import br.com.santos.vinicius.nifflerapi.model.dto.BlacklistDto;
-import br.com.santos.vinicius.nifflerapi.model.response.ErrorResponse;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
 import br.com.santos.vinicius.nifflerapi.service.BlacklistService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +15,7 @@ import java.io.IOException;
 @Tag(name = "Blacklist", description = "Manage the blacklist to not allow users receive points")
 @RestController
 @RequestMapping("v2/blacklist")
-public class BlacklistController {
+public class BlacklistController extends ExceptionsHandler {
 
     @Autowired
     BlacklistService blacklistService;
@@ -61,23 +58,5 @@ public class BlacklistController {
     @DeleteMapping("/id/{userId}")
     public ResponseEntity<Response> deleteUserFromBlacklistByUserId(@PathVariable Long userId) {
         return blacklistService.removeUserFromBlacklistByUserId(userId);
-    }
-
-    @ExceptionHandler(NoSuchElementFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<Response> handleNoSuchElementFound(NoSuchElementFoundException exception) {
-        ErrorResponse errorResponse = new ErrorResponse(exception.getReason(),
-                exception.getStatus().value(), exception.getStatus().name());
-
-        return ResponseEntity.status(exception.getStatus()).body(new Response(errorResponse));
-    }
-
-    @ExceptionHandler(ElementAlreadyReportedException.class)
-    @ResponseStatus(HttpStatus.ALREADY_REPORTED)
-    public ResponseEntity<Response> handleElementAlreadyReported(ElementAlreadyReportedException exception) {
-        ErrorResponse errorResponse = new ErrorResponse(exception.getReason(),
-                exception.getStatus().value(), exception.getStatus().name());
-
-        return ResponseEntity.status(exception.getStatus()).body(new Response(errorResponse));
     }
 }

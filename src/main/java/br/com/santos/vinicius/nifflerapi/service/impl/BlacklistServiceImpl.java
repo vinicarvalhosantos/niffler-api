@@ -45,7 +45,7 @@ public class BlacklistServiceImpl implements BlacklistService {
 
         if (user == null) {
             log.info("User does not exists in twitch base.");
-            throw new NoSuchElementFoundException(HttpStatus.NOT_FOUND, String.format("User '%s' does not exists.", username));
+            throw new NoSuchElementFoundException(String.format("User '%s' does not exists.", username));
         }
 
         Optional<BlacklistEntity> blacklistEntityOptional = blacklistRepository.findByUserId(user.getUserId());
@@ -60,7 +60,7 @@ public class BlacklistServiceImpl implements BlacklistService {
 
         BlacklistEntity blacklistEntity = blacklistEntityOptional.get();
         if (blacklistEntity.equalsTwitchUser(user)) {
-            throw new ElementAlreadyReportedException(HttpStatus.ALREADY_REPORTED, String.format("User '%s' already in blacklist.", username));
+            throw new ElementAlreadyReportedException(String.format("User '%s' already in blacklist.", username));
         }
 
         blacklistEntity.setUsername(user.getUsername());
@@ -89,8 +89,7 @@ public class BlacklistServiceImpl implements BlacklistService {
         List<BlacklistEntity> blacklistEntityList = IteratorUtils.toList(blacklistRepository.findAll().iterator());
 
         if (blacklistEntityList.isEmpty()) {
-            ErrorResponse errorResponse = new ErrorResponse("Any user are in blacklist", 404, HttpStatus.NOT_FOUND.name());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(errorResponse));
+            throw new NoSuchElementFoundException("Any user are in blacklist.");
         }
 
         SuccessResponse successResponse = new SuccessResponse(formatRecords(blacklistEntityList), "Users were found in blacklist");
@@ -115,8 +114,7 @@ public class BlacklistServiceImpl implements BlacklistService {
     private ResponseEntity<Response> getUserInBlacklist(Optional<BlacklistEntity> blacklistEntity) {
 
         if (blacklistEntity.isEmpty()) {
-            ErrorResponse errorResponse = new ErrorResponse("User was not found in blacklist", 404, HttpStatus.NOT_FOUND.name());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Response(errorResponse));
+            throw new NoSuchElementFoundException("User was not found in blacklist.");
         }
         List<Object> records = List.of(blacklistEntity.get());
 

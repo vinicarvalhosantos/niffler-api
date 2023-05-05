@@ -1,5 +1,6 @@
 package br.com.santos.vinicius.nifflerapi.controller;
 
+import br.com.santos.vinicius.nifflerapi.exception.InternalServerException;
 import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModel;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModelData;
@@ -24,12 +25,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -154,7 +155,7 @@ public class UserControllerTest {
     @Test
     public void it_should_throw_not_found_exception() throws Exception {
 
-        when(userService.getAllUsers()).thenThrow(new NoSuchElementFoundException(HttpStatus.NOT_FOUND, "Any users in our database."));
+        when(userService.getAllUsers()).thenThrow(new NoSuchElementFoundException("Any users in our database."));
         assertThrows(NoSuchElementFoundException.class, () -> userService.getAllUsers());
 
         mockMvc.perform(get("/v2/user")
@@ -162,6 +163,48 @@ public class UserControllerTest {
                 .andDo(print())
                 .andExpect(status().isNotFound());
 
+    }
+
+    @Test
+    public void it_should_throw_internal_error_users() throws Exception {
+        String[] realUsers = new String[]{"161920081", "528689231", "47115827", "36413513"};
+        String firstRandomUUID = UUID.randomUUID().toString();
+        String secondRandomUUID = UUID.randomUUID().toString();
+        String thirdRandomUUID = UUID.randomUUID().toString();
+        String fourthRandomUUID = UUID.randomUUID().toString();
+        Date createdAt = new Date();
+
+        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiefsdfds", "zvinniie", 0.0, 0.0);
+        firstUser.setId(firstRandomUUID);
+        firstUser.setCreatedAt(createdAt);
+
+        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisafsdfds", "Hiromisak", 0.0, 0.0);
+        secondUser.setId(secondRandomUUID);
+        secondUser.setCreatedAt(createdAt);
+
+        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilvafsdfds", "TheAlbertSilva", 0.0, 0.0);
+        thirdUser.setId(thirdRandomUUID);
+        thirdUser.setCreatedAt(createdAt);
+
+        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalllfsdfds", "MrFalll", 0.0, 0.0);
+        fourthUser.setId(fourthRandomUUID);
+        fourthUser.setCreatedAt(createdAt);
+
+        List<UserEntity> users = List.of(firstUser, secondUser, thirdUser, fourthUser);
+
+        when(userRepository.findAll()).thenReturn(users);
+        when(userService.fetchAllUsers()).thenThrow(new InternalServerException("An error occured"));
+        assertThrows(InternalServerException.class, () -> userService.fetchAllUsers());
+
+
+        ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
+        String requestBody = objectWriter.writeValueAsString(null);
+
+        mockMvc.perform(put("/v2/user/fetch")
+                        .content(requestBody)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
