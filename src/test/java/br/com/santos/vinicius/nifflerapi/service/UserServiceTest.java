@@ -304,7 +304,7 @@ public class UserServiceTest {
 
         UserMessageDto userMessageDto = new UserMessageDto();
         userMessageDto.setMessage("MESSAGE TEST");
-        userMessageDto.setEmotes(Collections.emptyList());
+        userMessageDto.setEmotesSent(Collections.emptyList());
         userMessageDto.setSubscriber(true);
         userMessageDto.setEmoteOnly(false);
         userMessageDto.setUsername("zvinniie");
@@ -332,7 +332,7 @@ public class UserServiceTest {
 
         UserMessageDto userMessageDto = new UserMessageDto();
         userMessageDto.setMessage("MESSAGE TEST");
-        userMessageDto.setEmotes(Collections.emptyList());
+        userMessageDto.setEmotesSent(Collections.emptyList());
         userMessageDto.setSubscriber(true);
         userMessageDto.setEmoteOnly(false);
         userMessageDto.setUsername("zvinniie");

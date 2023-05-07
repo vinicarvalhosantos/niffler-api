@@ -213,8 +213,10 @@ public class UserServiceImpl implements UserService {
                     .filter(user -> user.getUserId() == Long.parseLong(userModelData.getId()) && !user.equalsTwitchUser(userModelData))
                     .collect(Collectors.toList());
 
-            if (!userDifferent.isEmpty())
-                usersDifferent.add(userDifferent.get(0).fetchUserFromTwitchUser(userModelData));
+            if (!userDifferent.isEmpty()) {
+                userDifferent.get(0).fetchUserFromTwitchUser(userModelData);
+                usersDifferent.add(userDifferent.get(0));
+            }
         }
 
         log.info("Found {} users to be updated.", usersDifferent.size());

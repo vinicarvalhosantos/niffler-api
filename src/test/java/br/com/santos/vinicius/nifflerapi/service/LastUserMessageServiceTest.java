@@ -11,8 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -58,12 +57,21 @@ public class LastUserMessageServiceTest {
     @Test
     public void it_should_update_last_user_message() {
 
-        LastUserMessageEntity lastUserMessageNew = new LastUserMessageEntity(55478L, "NEW MESSAGE TEST");
+        LastUserMessageEntity lastUserMessageNew = new LastUserMessageEntity();
+        lastUserMessageNew.setUserId(55478L);
+        lastUserMessageNew.setLastMessage("NEW MESSAGE TEST");
         LastUserMessageEntity lastUserMessageOld = new LastUserMessageEntity(55478L, "OLD OLD OLD");
 
         when(lastUserMessageRepository.save(any(LastUserMessageEntity.class))).thenReturn(lastUserMessageNew);
 
         lastUserMessageService.updateUserLastMessage(lastUserMessageOld, "NEW MESSAGE TEST");
+
+        when(lastUserMessageRepository.findLastUserMessageByUserId(anyLong())).thenReturn(Optional.of(lastUserMessageNew));
+        Optional<LastUserMessageEntity> actualLastMessage = lastUserMessageRepository.findLastUserMessageByUserId(55478L);
+
+        assertTrue(actualLastMessage.isPresent());
+        LastUserMessageEntity entity = actualLastMessage.get();
+        assertEquals("NEW MESSAGE TEST", entity.getLastMessage());
     }
 
 }

@@ -58,13 +58,11 @@ public class UserEntity {
                 && Objects.equals(this.displayName, ((TwitchUserModelData) obj).getDisplay_name());
     }
 
-    public UserEntity fetchUserFromTwitchUser(Object obj) {
-        if (this.equalsTwitchUser(obj)) return this;
+    public void fetchUserFromTwitchUser(Object obj) {
+        if (this.equalsTwitchUser(obj)) return;
 
         this.username = ((TwitchUserModelData) obj).getLogin();
         this.displayName = ((TwitchUserModelData) obj).getDisplay_name();
-
-        return this;
     }
 
     public boolean equalsUserMessage(Object obj) {

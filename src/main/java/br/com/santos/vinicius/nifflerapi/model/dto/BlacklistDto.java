@@ -2,7 +2,6 @@ package br.com.santos.vinicius.nifflerapi.model.dto;
 
 import lombok.*;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

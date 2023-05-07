@@ -5,6 +5,10 @@ import java.util.List;
 
 public class EmoteUtil {
 
+    private EmoteUtil(){
+
+    }
+
     public static List<String> extractWrittenEmotes(List<String> emotes, String message) {
         List<String> writtenEmotes = new ArrayList<>();
 

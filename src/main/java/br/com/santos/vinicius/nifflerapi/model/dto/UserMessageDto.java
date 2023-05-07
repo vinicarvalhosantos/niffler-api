@@ -31,26 +31,13 @@ public class UserMessageDto implements Serializable {
 
     private boolean emoteOnly;
 
-    private List<String> emotes;
-
-    @Override
-    public String toString() {
-        return "UserMessageDto{" +
-                "message='" + message + '\'' +
-                ", username='" + username + '\'' +
-                ", userId=" + userId +
-                ", subscriber=" + subscriber +
-                ", subscriptionTime=" + subscriptionTime +
-                ", emoteOnly=" + emoteOnly +
-                ", emotes=" + emotes +
-                '}';
-    }
+    private List<String> emotesSent;
 
     public int messageLength() {
         if (this.emoteOnly) {
-            return this.emotes.size();
+            return this.emotesSent.size();
         }
-        List<String> emotes = EmoteUtil.extractWrittenEmotes(this.emotes, this.message);
+        List<String> emotes = EmoteUtil.extractWrittenEmotes(this.emotesSent, this.message);
         String messageWithoutEmotes = EmoteUtil.removeEmotesFromMessage(emotes, this.message);
 
         return messageWithoutEmotes.length() + emotes.size();

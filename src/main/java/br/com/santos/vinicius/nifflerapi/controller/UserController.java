@@ -20,7 +20,7 @@ public class UserController extends ExceptionsHandler {
 
 
     @GetMapping("")
-    public ResponseEntity<Response> getAllUsers() throws IOException {
+    public ResponseEntity<Response> getAllUsers() {
         return userService.getAllUsers();
     }
 

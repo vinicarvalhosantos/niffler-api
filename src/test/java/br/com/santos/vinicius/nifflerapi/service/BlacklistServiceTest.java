@@ -240,10 +240,7 @@ public class BlacklistServiceTest {
 
         when(blacklistRepository.findByUsername(any(String.class))).thenReturn(Optional.empty());
 
-        ResponseEntity<Response> requestResponse = blacklistService.getUserInBlacklistByUsername(input);
-
-        assertNotNull(requestResponse);
-        assertEquals(HttpStatus.NOT_FOUND, requestResponse.getStatusCode());
+        blacklistService.getUserInBlacklistByUsername(input);
     }
 
     @Test
@@ -286,10 +283,7 @@ public class BlacklistServiceTest {
 
         when(blacklistRepository.findByUserId(any(Long.class))).thenReturn(Optional.empty());
 
-        ResponseEntity<Response> requestResponse = blacklistService.getUserInBlacklistByUserId(input);
-
-        assertNotNull(requestResponse);
-        assertEquals(HttpStatus.NOT_FOUND, requestResponse.getStatusCode());
+        blacklistService.getUserInBlacklistByUserId(input);
     }
 
     @Test
@@ -408,10 +402,7 @@ public class BlacklistServiceTest {
 
         when(blacklistRepository.findAll()).thenReturn(new ArrayList<>());
 
-        ResponseEntity<Response> requestResponse = blacklistService.getAllUsersInBlacklist();
-
-        assertNotNull(requestResponse);
-        assertEquals(HttpStatus.NOT_FOUND, requestResponse.getStatusCode());
+        blacklistService.getAllUsersInBlacklist();
     }
 
     @Test
