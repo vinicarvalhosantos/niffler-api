@@ -83,15 +83,15 @@ public class UserServiceTest {
         String fourthRandomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiefsdfds", "zvinniie", 0.0, 0.0);
+        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiefsdfds", "zvinniiegfdghfdgf", 0.0, 0.0);
         firstUser.setId(firstRandomUUID);
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisafsdfds", "Hiromisak", 0.0, 0.0);
+        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisafsdfds", "Hiromisakgdfgfgf", 0.0, 0.0);
         secondUser.setId(secondRandomUUID);
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilvafsdfds", "TheAlbertSilva", 0.0, 0.0);
+        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilvafsdfds", "TheAlbertSilvagfdgfd", 0.0, 0.0);
         thirdUser.setId(thirdRandomUUID);
         thirdUser.setCreatedAt(createdAt);
 
