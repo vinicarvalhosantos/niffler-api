@@ -1,6 +1,7 @@
 package br.com.santos.vinicius.nifflerapi.service;
 
 import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
+import br.com.santos.vinicius.nifflerapi.model.dto.UserMessageDto;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
 import br.com.santos.vinicius.nifflerapi.repository.UserRepository;
@@ -75,7 +76,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void it_should_fetch_users() throws IOException {
+    public void it_should_fetch_users() throws IOException, InterruptedException {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
         String thirdRandomUUID = UUID.randomUUID().toString();
@@ -109,7 +110,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void it_should_fetch_any_users() throws IOException {
+    public void it_should_fetch_any_users() throws IOException, InterruptedException {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
         String thirdRandomUUID = UUID.randomUUID().toString();
@@ -143,7 +144,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void it_should_fetch_only_one_user() throws IOException {
+    public void it_should_fetch_only_one_user() throws IOException, InterruptedException {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
         String thirdRandomUUID = UUID.randomUUID().toString();
@@ -177,7 +178,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void it_should_fetch_when_user_is_deleted() throws IOException {
+    public void it_should_fetch_when_user_is_deleted() throws IOException, InterruptedException {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
         String thirdRandomUUID = UUID.randomUUID().toString();
@@ -216,7 +217,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void it_should_fetch_when_bad_request() throws IOException {
+    public void it_should_fetch_when_bad_request() throws IOException, InterruptedException {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
         String thirdRandomUUID = UUID.randomUUID().toString();
@@ -296,6 +297,78 @@ public class UserServiceTest {
         UserEntity response = userService.fetchUserByUsername("user_teste_teste");
 
         assertNull(response);
+    }
+
+    @Test
+    public void should_fetch_user_by_user_message_model() {
+
+        UserMessageDto userMessageDto = new UserMessageDto();
+        userMessageDto.setMessage("MESSAGE TEST");
+        userMessageDto.setEmotes(Collections.emptyList());
+        userMessageDto.setSubscriber(true);
+        userMessageDto.setEmoteOnly(false);
+        userMessageDto.setUsername("zvinniie");
+        userMessageDto.setDisplayName("zvinniie");
+        userMessageDto.setUserId(55488L);
+        userMessageDto.setSubscriptionTime(15);
+        userMessageDto.setSubscriptionTier(1);
+
+        UserEntity user = new UserEntity();
+        user.setUserId(55488L);
+        user.setUsername("zvinniie");
+        user.setDisplayName("zvinniie");
+
+        when(userRepository.findByUserId(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
+
+        UserEntity response = userService.fetchFromUserMessage(userMessageDto);
+
+        assertNotNull(response);
+        assertEquals(response.getUserId(), userMessageDto.getUserId());
+    }
+
+    @Test
+    public void should_fetch_user_by_user_message_model_when_exists() {
+
+        UserMessageDto userMessageDto = new UserMessageDto();
+        userMessageDto.setMessage("MESSAGE TEST");
+        userMessageDto.setEmotes(Collections.emptyList());
+        userMessageDto.setSubscriber(true);
+        userMessageDto.setEmoteOnly(false);
+        userMessageDto.setUsername("zvinniie");
+        userMessageDto.setDisplayName("zvinniie");
+        userMessageDto.setUserId(55488L);
+        userMessageDto.setSubscriptionTime(15);
+        userMessageDto.setSubscriptionTier(1);
+
+        UserEntity user = new UserEntity();
+        user.setUserId(55488L);
+        user.setUsername("zvinniie");
+        user.setDisplayName("zvinniie");
+
+        when(userRepository.findByUserId(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
+
+        UserEntity response = userService.fetchFromUserMessage(userMessageDto);
+
+        assertNotNull(response);
+        assertEquals(response.getUserId(), userMessageDto.getUserId());
+    }
+
+    @Test
+    public void should_save_user() {
+
+        UserEntity user = new UserEntity();
+        user.setUserId(55488L);
+        user.setUsername("zvinniie");
+        user.setDisplayName("zvinniie");
+
+        when(userRepository.save(any(UserEntity.class))).thenReturn(user);
+
+        UserEntity response = userService.saveUser(user);
+
+        assertNotNull(response);
+        assertEquals(response.getUserId(), user.getUserId());
     }
 
 }

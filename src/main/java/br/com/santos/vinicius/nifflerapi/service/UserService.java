@@ -1,6 +1,7 @@
 package br.com.santos.vinicius.nifflerapi.service;
 
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModel;
+import br.com.santos.vinicius.nifflerapi.model.dto.UserMessageDto;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +15,16 @@ public interface UserService {
 
     ResponseEntity<Response> getAllUsers();
 
-    ResponseEntity<Response> fetchAllUsers() throws IOException;
+    ResponseEntity<Response> fetchAllUsers() throws IOException, InterruptedException;
 
     UserEntity fetchUserByUsername(String username) throws IOException;
+
+    UserEntity fetchFromUserMessage(UserMessageDto userMessageDto);
 
     TwitchUserModel getTwitchUser(String username) throws IOException;
 
     TwitchUserModel getTwitchUsersByIds(List<UserEntity> userEntityList) throws IOException;
+
+    UserEntity saveUser(UserEntity user);
 
 }

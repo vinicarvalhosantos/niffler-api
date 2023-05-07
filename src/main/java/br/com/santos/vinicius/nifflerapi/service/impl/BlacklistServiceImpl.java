@@ -5,7 +5,6 @@ import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.dto.BlacklistDto;
 import br.com.santos.vinicius.nifflerapi.model.entity.BlacklistEntity;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
-import br.com.santos.vinicius.nifflerapi.model.response.ErrorResponse;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
 import br.com.santos.vinicius.nifflerapi.model.response.SuccessResponse;
 import br.com.santos.vinicius.nifflerapi.repository.BlacklistRepository;
@@ -109,6 +108,13 @@ public class BlacklistServiceImpl implements BlacklistService {
         blacklistRepository.deleteByUserId(userId);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
+    }
+
+    @Override
+    public boolean isUserInBlacklist(Long userId) {
+        Optional<BlacklistEntity> blacklistEntity = blacklistRepository.findByUserId(userId);
+
+        return blacklistEntity.isPresent();
     }
 
     private ResponseEntity<Response> getUserInBlacklist(Optional<BlacklistEntity> blacklistEntity) {

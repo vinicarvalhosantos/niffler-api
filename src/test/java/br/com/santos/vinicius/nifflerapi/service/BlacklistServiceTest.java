@@ -22,8 +22,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -413,6 +412,50 @@ public class BlacklistServiceTest {
 
         assertNotNull(requestResponse);
         assertEquals(HttpStatus.NOT_FOUND, requestResponse.getStatusCode());
+    }
+
+    @Test
+    public void it_should_get_user_from_blacklist() {
+
+        BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
+
+        String randomUUID = UUID.randomUUID().toString();
+        Date createdAt = new Date();
+
+        Long input = 55547L;
+
+        blacklistEntityExpected.setUserId(55547L);
+        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUsername("username_test");
+        blacklistEntityExpected.setCreatedAt(createdAt);
+
+        when(blacklistRepository.findByUserId(any(Long.class))).thenReturn(Optional.of(blacklistEntityExpected));
+
+        boolean response = blacklistService.isUserInBlacklist(input);
+
+        assertTrue(response);
+    }
+
+    @Test
+    public void it_should_get_user_from_blacklist_false() {
+
+        BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
+
+        String randomUUID = UUID.randomUUID().toString();
+        Date createdAt = new Date();
+
+        Long input = 55547L;
+
+        blacklistEntityExpected.setUserId(55547L);
+        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUsername("username_test");
+        blacklistEntityExpected.setCreatedAt(createdAt);
+
+        when(blacklistRepository.findByUserId(any(Long.class))).thenReturn(Optional.empty());
+
+        boolean response = blacklistService.isUserInBlacklist(input);
+
+        assertFalse(response);
     }
 
 }

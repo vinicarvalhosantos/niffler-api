@@ -4,6 +4,7 @@ import br.com.santos.vinicius.nifflerapi.exception.InternalServerException;
 import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModel;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModelData;
+import br.com.santos.vinicius.nifflerapi.model.dto.UserMessageDto;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
 import br.com.santos.vinicius.nifflerapi.model.response.ErrorResponse;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<Response> fetchAllUsers() throws IOException {
+    public ResponseEntity<Response> fetchAllUsers() throws IOException, InterruptedException {
 
         log.info("Fetching all users in database.");
         List<UserEntity> userEntityList = IteratorUtils.toList(userRepository.findAll().iterator());
@@ -87,7 +88,30 @@ public class UserServiceImpl implements UserService {
         return fetchUser(userEntity, twitchUser);
     }
 
-    private ResponseEntity<Response> fetchUsersExisting(TwitchUserModel twitchUsers, List<UserEntity> userEntityList) {
+    @Override
+    public UserEntity fetchFromUserMessage(UserMessageDto userMessageDto) {
+        log.info("Checking if user exists in our database.");
+        Optional<UserEntity> userEntity = userRepository.findByUserId(userMessageDto.getUserId());
+
+        if (userEntity.isEmpty()) {
+            log.info("User does not exists in our database. Creating it.");
+            UserEntity user = new UserEntity(userMessageDto.getUserId(),
+                    userMessageDto.getUsername(),
+                    userMessageDto.getDisplayName(),
+                    0.0, 0.0);
+            return userRepository.save(user);
+        }
+
+        UserEntity user = userEntity.get();
+
+        log.info("Fetching user within user message if is needed.");
+        user.fetchUserFromMessage(userMessageDto);
+
+        log.info("Finish fetching.");
+        return user;
+    }
+
+    private ResponseEntity<Response> fetchUsersExisting(TwitchUserModel twitchUsers, List<UserEntity> userEntityList) throws InterruptedException {
         int numberOfUsersUpdated = fetchUsers(twitchUsers.getData(), userEntityList);
         String message = extractMessage(numberOfUsersUpdated);
 
@@ -98,13 +122,16 @@ public class UserServiceImpl implements UserService {
 
     private UserEntity fetchUser(Optional<UserEntity> userEntity, TwitchUserModel twitchUser) {
 
-        if (twitchUser.getData().isEmpty())
+        log.info("Checking if twitch user exists.");
+        if (twitchUser.getData().isEmpty()) {
+            log.info("Twitch user does not exists.");
             return null;
+        }
 
         return getUserFetched(userEntity, twitchUser);
     }
 
-    private int fetchUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) {
+    private int fetchUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) throws InterruptedException {
         List<UserEntity> usersDifferent = extractDifferentUsers(twitchUserModelDataList, userEntityList);
         List<UserEntity> usersDeleted = extractDeletedUsers(twitchUserModelDataList, userEntityList);
 
@@ -134,6 +161,7 @@ public class UserServiceImpl implements UserService {
         if (!user.equalsTwitchUser(twitchUser.getData().get(0))) {
             user.setUsername(twitchUser.getData().get(0).getLogin());
             user.setDisplayName(twitchUser.getData().get(0).getDisplay_name());
+            userRepository.save(user);
         }
 
         return user;
@@ -169,6 +197,11 @@ public class UserServiceImpl implements UserService {
 
         return twitchUserRequest.execute().body();
 
+    }
+
+    @Override
+    public UserEntity saveUser(UserEntity user) {
+        return userRepository.save(user);
     }
 
     private List<UserEntity> extractDifferentUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) {
@@ -210,7 +243,7 @@ public class UserServiceImpl implements UserService {
         return usersDeleted;
     }
 
-    private void saveAllUsers(List<UserEntity> usersToBeUpdated) {
+    private void saveAllUsers(List<UserEntity> usersToBeUpdated) throws InterruptedException {
         log.info("Updating all different users.");
         Runnable worker = new UserSaveRunnable(usersToBeUpdated, userRepository);
         executeARunnable(worker);
@@ -218,7 +251,7 @@ public class UserServiceImpl implements UserService {
         log.info("Updated all users.");
     }
 
-    private void deleteAllUsersDeleted(List<UserEntity> usersToBeUpdated) {
+    private void deleteAllUsersDeleted(List<UserEntity> usersToBeUpdated) throws InterruptedException {
         log.info("Deleting all deleted users from twitch.");
         Runnable worker = new UserDeleteRunnable(usersToBeUpdated, userRepository);
         executeARunnable(worker);
@@ -226,18 +259,12 @@ public class UserServiceImpl implements UserService {
         log.info("Deleted all users.");
     }
 
-    private void executeARunnable(Runnable worker) {
-        try {
+    private void executeARunnable(Runnable worker) throws InterruptedException {
+        ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+        executor.execute(worker);
+        executor.shutdown();
+        executor.awaitTermination(10000L, TimeUnit.MILLISECONDS);
 
-            ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
-            executor.execute(worker);
-            executor.shutdown();
-            executor.awaitTermination(10000L, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            log.info("An error occurred when tried to execute multiple threads:\n{}", e.getMessage());
-            throw new InternalServerException(
-                    String.format("An error occurred when tried to execute multiple threads:%n%s", e.getMessage()));
-        }
     }
 
     private String extractMessage(int numberOfUsersUpdated) {

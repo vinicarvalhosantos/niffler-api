@@ -21,4 +21,6 @@ public interface BlacklistService {
     ResponseEntity<Response> removeUserFromBlacklistByUsername(String username);
 
     ResponseEntity<Response> removeUserFromBlacklistByUserId(Long userId);
+
+    boolean isUserInBlacklist(Long userId);
 }
