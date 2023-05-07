@@ -4,15 +4,12 @@ import br.com.santos.vinicius.nifflerapi.controller.handler.ExceptionsHandler;
 import br.com.santos.vinicius.nifflerapi.model.dto.BlacklistDto;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
 import br.com.santos.vinicius.nifflerapi.service.BlacklistService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 
-@Tag(name = "Blacklist", description = "Manage the blacklist to not allow users receive points")
 @RestController
 @RequestMapping("v2/blacklist")
 public class BlacklistController extends ExceptionsHandler {
@@ -31,11 +28,6 @@ public class BlacklistController extends ExceptionsHandler {
     public ResponseEntity<Response> getUserInBlacklistByUserId(@PathVariable Long userId) {
         return blacklistService.getUserInBlacklistByUserId(userId);
     }
-
-    @Operation(
-            summary = "Retrieve all users in blacklist.",
-            description = "Get all users in the blacklist. Being in the blacklist they will not be able to receive points"
-    )
 
     @GetMapping("")
     public ResponseEntity<Response> getAllUsersInBlacklist() {

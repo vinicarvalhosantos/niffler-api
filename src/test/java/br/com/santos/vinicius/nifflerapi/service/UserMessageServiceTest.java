@@ -199,6 +199,37 @@ public class UserMessageServiceTest {
     }
 
     @Test
+    public void it_should_not_analyse_message_too_much_Ks() throws IOException {
+
+        UserEntity user = new UserEntity();
+        user.setUserId(55488L);
+        user.setUsername("zvinniie");
+        user.setDisplayName("zvinniie");
+
+        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(55488L, "MESSAGE TEST");
+
+        when(blacklistService.isUserInBlacklist(anyLong())).thenReturn(false);
+        when(userService.fetchFromUserMessage(any(UserMessageDto.class))).thenReturn(user);
+        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(lastUserMessage);
+
+        UserMessageDto userMessageDto = new UserMessageDto();
+        userMessageDto.setMessage("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
+        userMessageDto.setEmotesSent(Collections.emptyList());
+        userMessageDto.setSubscriber(true);
+        userMessageDto.setEmoteOnly(false);
+        userMessageDto.setUsername("zvinniie");
+        userMessageDto.setDisplayName("zvinniie");
+        userMessageDto.setUserId(55488L);
+        userMessageDto.setSubscriptionTime(15);
+        userMessageDto.setSubscriptionTier(1);
+
+        userMessageService.messageAnalysis(userMessageDto);
+
+        assertNotEquals(userMessageDto.getMessage(), lastUserMessage.getLastMessage());
+
+    }
+
+    @Test
     public void it_should_analyse_message_user_set_entity() throws IOException {
 
         UserEntity user = new UserEntity();

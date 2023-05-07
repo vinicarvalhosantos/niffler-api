@@ -49,7 +49,6 @@ public class UserMessageServiceImpl implements UserMessageService {
         }
         log.info("User is not in blacklist! Proceeding.");
 
-        log.info("Starting to fetch user from user message.");
         UserEntity user = userService.fetchFromUserMessage(userMessageDto);
 
         Long userId = user.getUserId();
@@ -59,9 +58,11 @@ public class UserMessageServiceImpl implements UserMessageService {
 
         LastUserMessageEntity lastUserMessage = lastUserMessageService.findUserLastMessage(userId);
 
+        log.info("Comparing the messages.");
         double similarity = lastUserMessage.compareMessages(message);
 
         if (StringUtil.isSpam(message) || similarity >= 0.7) {
+            log.info("The message sent is a spam, user will not receive points this message.");
             lastUserMessageService.updateUserLastMessage(lastUserMessage, message);
             UserMessageEntity userMessage = new UserMessageEntity(userId, messageLength, pointsToAdd, true);
             userMessageRepository.save(userMessage);
@@ -70,6 +71,7 @@ public class UserMessageServiceImpl implements UserMessageService {
 
         pointsToAdd = calculatePointsToAdd(userMessageDto, messageLength);
 
+        log.info("Finishing and saving the message and points information.");
         UserMessageEntity userMessage = new UserMessageEntity(user.getUserId(), messageLength, pointsToAdd, false);
         userMessageRepository.save(userMessage);
         user.setPointsToAdd(pointsToAdd.doubleValue());
@@ -78,12 +80,14 @@ public class UserMessageServiceImpl implements UserMessageService {
     }
 
     private BigDecimal calculatePointsToAdd(UserMessageDto userMessageDto, int messageLength) {
+        log.info("Starting to calculate the percentage that user will receive with this message.q");
 
         int percentage = calculatePercentage(userMessageDto.isSubscriber(),
                 userMessageDto.getSubscriptionTime(), userMessageDto.getSubscriptionTier());
 
         double pointsToAdd = (Double.parseDouble(String.valueOf(messageLength)) / percentage);
 
+        log.info("Finished calculation.");
         return BigDecimal.valueOf(pointsToAdd).setScale(2, RoundingMode.HALF_EVEN);
     }
 

@@ -90,6 +90,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity fetchFromUserMessage(UserMessageDto userMessageDto) {
+        log.info("Starting to fetch user from user message.");
         log.info("Checking if user exists in our database.");
         Optional<UserEntity> userEntity = userRepository.findByUserId(userMessageDto.getUserId());
 
@@ -107,7 +108,7 @@ public class UserServiceImpl implements UserService {
         log.info("Fetching user within user message if is needed.");
         user.fetchUserFromMessage(userMessageDto);
 
-        log.info("Finish fetching.");
+        log.info("User fetched.");
         return user;
     }
 
@@ -201,6 +202,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserEntity saveUser(UserEntity user) {
+        log.info("Saving user.");
         return userRepository.save(user);
     }
 
