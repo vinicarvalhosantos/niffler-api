@@ -8,6 +8,8 @@ Globals:
     Timeout: 30
 
 Resources:
+  ProfileSQSFunction:
+    Type: AWS::SQS::Queue
   ProfileApiFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -36,6 +38,11 @@ Resources:
           Type: Api
           Properties:
             Path: /{proxy+}
-            Method: ANY"
+            Method: ANY
+        SqsEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt ProfileSQSFunction.Arn
+            BatchSize: 10"
 
 echo -e "${TEMPLATE}"
