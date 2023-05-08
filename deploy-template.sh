@@ -10,6 +10,11 @@ Globals:
 Resources:
   ProfileSQSFunction:
     Type: AWS::SQS::Queue
+    Properties:
+      QueueName: user_messages_queue.fifo
+      ContentBasedDeduplication: true
+      FifoQueue: true
+      MessageRetentionPeriod: 345600
   ProfileApiFunction:
     Type: AWS::Serverless::Function
     Properties:
