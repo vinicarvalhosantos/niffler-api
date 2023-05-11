@@ -61,7 +61,7 @@ public class AmazonSQSConfig {
     public SimpleMessageListenerContainerFactory simpleMessageListenerContainerFactory(AmazonSQSAsync amazonSQSAsync) {
         SimpleMessageListenerContainerFactory factory = new SimpleMessageListenerContainerFactory();
         factory.setAmazonSqs(amazonSQSAsync);
-        factory.setMaxNumberOfMessages(500);
+        factory.setMaxNumberOfMessages(10);
         return factory;
     }
 
