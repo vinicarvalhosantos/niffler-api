@@ -7,6 +7,7 @@ import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.messaging.config.QueueMessageHandlerFactory;
+import io.awspring.cloud.messaging.config.SimpleMessageListenerContainerFactory;
 import io.awspring.cloud.messaging.core.QueueMessagingTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -54,6 +55,14 @@ public class AmazonSQSConfig {
         ));
 
         return queueHandlerFactory;
+    }
+
+    @Bean
+    public SimpleMessageListenerContainerFactory simpleMessageListenerContainerFactory(AmazonSQSAsync amazonSQSAsync) {
+        SimpleMessageListenerContainerFactory factory = new SimpleMessageListenerContainerFactory();
+        factory.setAmazonSqs(amazonSQSAsync);
+        factory.setMaxNumberOfMessages(500);
+        return factory;
     }
 
     private MessageConverter jacksonMessageConverter(final ObjectMapper mapper) {
