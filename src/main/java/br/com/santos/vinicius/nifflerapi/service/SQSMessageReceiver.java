@@ -11,7 +11,7 @@ import java.io.IOException;
 @Service
 public interface SQSMessageReceiver {
 
-    @SqsListener(value = {"user_messages_queue.fifo"}, deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
+    @SqsListener(value = "${aws.sqs.queue.name}", deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
     void receiveMessage(UserMessageDto message, @Header("SenderId") String senderId) throws IOException;
 
 }

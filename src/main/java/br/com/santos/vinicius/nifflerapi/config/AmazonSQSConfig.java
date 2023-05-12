@@ -2,9 +2,9 @@ package br.com.santos.vinicius.nifflerapi.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.awspring.cloud.messaging.config.QueueMessageHandlerFactory;
 import io.awspring.cloud.messaging.config.SimpleMessageListenerContainerFactory;
@@ -12,6 +12,7 @@ import io.awspring.cloud.messaging.core.QueueMessagingTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.converter.MessageConverter;
 import org.springframework.messaging.handler.annotation.support.PayloadMethodArgumentResolver;
@@ -30,13 +31,17 @@ public class AmazonSQSConfig {
     @Value("${aws.auth.region}")
     private String region;
 
+    @Value("${aws.sqs.queue.url}")
+    private String sqsUrl;
+
     @Bean
-    AmazonSQS amazonSQSClient() {
+    @Primary
+    AmazonSQSAsync amazonSQSClient() {
         final BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKeyId, secretAccessKey);
 
-        return AmazonSQSClientBuilder
+        return AmazonSQSAsyncClientBuilder
                 .standard()
-                .withRegion(region)
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(sqsUrl, region))
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
     }

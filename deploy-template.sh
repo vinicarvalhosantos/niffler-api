@@ -38,6 +38,10 @@ Resources:
           AWS__SECRET_KEY: ${AWS__SECRET_KEY}
           DEV_URL: ${DEV_URL}
           PROD_URL: ${PROD_URL}
+          SQS_QUEUE_URL: ${SQS_QUEUE_URL}
+          SQS_QUEUE_NAME: ${SQS_QUEUE_NAME}
+          SPRING_SECURITY_PASSWORD: ${SPRING_SECURITY_PASSWORD}
+          AWS_KMS_KEY_ID: ${AWS_KMS_KEY_ID}
       Events:
         Blacklist:
           Type: Api
