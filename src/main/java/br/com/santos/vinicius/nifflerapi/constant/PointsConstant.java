@@ -1,8 +1,8 @@
 package br.com.santos.vinicius.nifflerapi.constant;
 
-public class PointsConstants {
+public class PointsConstant {
 
-    private PointsConstants() {
+    private PointsConstant() {
     }
 
     public static final int PERCENTAGE_FOR_NON_SUBS = 200;

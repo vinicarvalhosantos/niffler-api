@@ -1,6 +1,6 @@
 package br.com.santos.vinicius.nifflerapi.service.impl;
 
-import br.com.santos.vinicius.nifflerapi.constant.PointsConstants;
+import br.com.santos.vinicius.nifflerapi.constant.PointsConstant;
 import br.com.santos.vinicius.nifflerapi.model.dto.UserMessageDto;
 import br.com.santos.vinicius.nifflerapi.model.entity.LastUserMessageEntity;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
@@ -35,9 +35,9 @@ public class UserMessageServiceImpl implements UserMessageService {
     LastUserMessageService lastUserMessageService;
 
     private static final int[] SUBSCRIPTION_PERCENTAGES = {
-            PointsConstants.PERCENTAGE_FOR_SUBS_T1,
-            PointsConstants.PERCENTAGE_FOR_SUBS_T2,
-            PointsConstants.PERCENTAGE_FOR_SUBS_T3
+            PointsConstant.PERCENTAGE_FOR_SUBS_T1,
+            PointsConstant.PERCENTAGE_FOR_SUBS_T2,
+            PointsConstant.PERCENTAGE_FOR_SUBS_T3
     };
 
     @Override
@@ -97,6 +97,6 @@ public class UserMessageServiceImpl implements UserMessageService {
             return SUBSCRIPTION_PERCENTAGES[subscriptionTier - 1] - subtractPercentage;
         }
 
-        return PointsConstants.PERCENTAGE_FOR_NON_SUBS;
+        return PointsConstant.PERCENTAGE_FOR_NON_SUBS;
     }
 }

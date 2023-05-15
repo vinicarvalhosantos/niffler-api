@@ -18,11 +18,16 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -46,7 +51,8 @@ import java.util.stream.Stream;
 
 
 @RunWith(SpringRunner.class)
-@WebMvcTest
+@AutoConfigureMockMvc
+@SpringBootTest
 public class BlacklistControllerTest {
 
 
@@ -60,6 +66,9 @@ public class BlacklistControllerTest {
     UserService userService;
 
     @MockBean
+    UserDetailsService userDetailsService;
+
+    @MockBean
     UserRepository userRepository;
 
     ObjectMapper objectMapper = new ObjectMapper();
@@ -68,6 +77,7 @@ public class BlacklistControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_add_user_in_blacklist() throws Exception {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
@@ -128,6 +138,7 @@ public class BlacklistControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_get_user_from_blacklist_by_username() throws Exception {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
@@ -165,6 +176,7 @@ public class BlacklistControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_get_user_from_blacklist_by_userid() throws Exception {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
@@ -202,6 +214,7 @@ public class BlacklistControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_delete_user_from_blacklist_by_username() throws Exception {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
@@ -233,6 +246,7 @@ public class BlacklistControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_delete_user_from_blacklist_by_userid() throws Exception {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
@@ -264,6 +278,7 @@ public class BlacklistControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_get_all_users_from_blacklist() throws Exception {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
@@ -324,6 +339,7 @@ public class BlacklistControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_throw_not_found_exception() throws Exception {
 
         when(blacklistService.getAllUsersInBlacklist()).thenThrow(new NoSuchElementFoundException("User batata does not exists."));
@@ -336,6 +352,7 @@ public class BlacklistControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_throw_already_reported_exception() throws Exception {
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();

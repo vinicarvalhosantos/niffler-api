@@ -1,15 +1,21 @@
 package br.com.santos.vinicius.nifflerapi.util;
 
 
+import com.amazonaws.services.kms.AWSKMS;
 import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
 
 
+@Component
 public class StringUtil {
     private static final int MAX_REPEATED_KS = 1;
 
-    private StringUtil(){}
+    private StringUtil() {
+    }
 
     public static double similarity(String longerString, String shorterString) {
 

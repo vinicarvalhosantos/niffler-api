@@ -17,11 +17,14 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -40,7 +43,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest
+@AutoConfigureMockMvc
+@SpringBootTest
 public class UserControllerTest {
 
     @MockBean
@@ -61,6 +65,7 @@ public class UserControllerTest {
     private MockMvc mockMvc;
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_get_all_users() throws Exception {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
@@ -131,6 +136,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_have_any_user_registered() throws Exception {
 
         ErrorResponse errorResponse = new ErrorResponse("Any users in our database.", 404, HttpStatus.NOT_FOUND.name());
@@ -153,6 +159,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_throw_not_found_exception() throws Exception {
 
         when(userService.getAllUsers()).thenThrow(new NoSuchElementFoundException("Any users in our database."));
@@ -166,6 +173,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_throw_internal_error_users() throws Exception {
         String[] realUsers = new String[]{"161920081", "528689231", "47115827", "36413513"};
         String firstRandomUUID = UUID.randomUUID().toString();
@@ -208,6 +216,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_fetch_users() throws Exception {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
@@ -266,6 +275,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_fetch_only_one_user() throws Exception {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();
@@ -324,6 +334,7 @@ public class UserControllerTest {
     }
 
     @Test
+    @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_fetch_any_users() throws Exception {
         String firstRandomUUID = UUID.randomUUID().toString();
         String secondRandomUUID = UUID.randomUUID().toString();

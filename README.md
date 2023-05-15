@@ -9,3 +9,5 @@ This api is a user loyalty system by StreamElements points. That means that user
 
 * The rest of this doc are in construction
 
+<iframe src="https://sonarcloud.io/project/overview?id=vinicarvalhosantos_niffler-api" title="Sonar cloud"></iframe>
+

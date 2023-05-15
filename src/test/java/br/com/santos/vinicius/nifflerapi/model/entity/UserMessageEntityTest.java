@@ -2,7 +2,9 @@ package br.com.santos.vinicius.nifflerapi.model.entity;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.math.BigDecimal;
@@ -13,7 +15,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(UserMessageEntity.class)
+@AutoConfigureMockMvc
+@SpringBootTest
 public class UserMessageEntityTest {
 
     @Test

@@ -15,6 +15,7 @@ Resources:
       ContentBasedDeduplication: true
       FifoQueue: true
       MessageRetentionPeriod: 345600
+      Handler: br.com.santos.vinicius.nifflerapi.config.handler.SQSHandler::handleRequest
   ProfileApiFunction:
     Type: AWS::Serverless::Function
     Properties:
