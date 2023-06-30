@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 public class ErrorResponse implements Serializable {
@@ -27,7 +30,7 @@ public class ErrorResponse implements Serializable {
         this.status = status;
         this.error = error;
         this.errorCode = 4041L;
-        this.timestamp = new Timestamp(new Date().getTime());
+        this.timestamp = new Timestamp(LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));
     }
 
     public String getMessage() {

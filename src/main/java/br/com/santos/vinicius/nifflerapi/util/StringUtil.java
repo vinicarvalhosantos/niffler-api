@@ -1,10 +1,6 @@
 package br.com.santos.vinicius.nifflerapi.util;
 
-
-import com.amazonaws.services.kms.AWSKMS;
 import org.apache.commons.text.similarity.LevenshteinDistance;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.regex.Pattern;
