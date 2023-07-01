@@ -29,6 +29,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,26 +68,22 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_get_all_users() throws Exception {
-        String firstRandomUUID = UUID.randomUUID().toString();
-        String secondRandomUUID = UUID.randomUUID().toString();
-        String thirdRandomUUID = UUID.randomUUID().toString();
-        String fourthRandomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(55547L, "username_test_1", "Username_Test_1", 0.0, 0.0);
-        firstUser.setId(firstRandomUUID);
+        UserEntity firstUser = new UserEntity(55547L, "username_test_1", "Username_Test_1", BigDecimal.ZERO, BigDecimal.ZERO);
+
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(555487L, "username_test_2", "Username_Test_2", 0.0, 0.0);
-        secondUser.setId(secondRandomUUID);
+        UserEntity secondUser = new UserEntity(555487L, "username_test_2", "Username_Test_2", BigDecimal.ZERO, BigDecimal.ZERO);
+
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(5554787L, "username_test_3", "Username_Test_3", 0.0, 0.0);
-        thirdUser.setId(thirdRandomUUID);
+        UserEntity thirdUser = new UserEntity(5554787L, "username_test_3", "Username_Test_3", BigDecimal.ZERO, BigDecimal.ZERO);
+
         thirdUser.setCreatedAt(createdAt);
 
-        UserEntity fourthUser = new UserEntity(45461487L, "username_test_4", "Username_Test_4", 0.0, 0.0);
-        fourthUser.setId(fourthRandomUUID);
+        UserEntity fourthUser = new UserEntity(45461487L, "username_test_4", "Username_Test_4", BigDecimal.ZERO, BigDecimal.ZERO);
+
         fourthUser.setCreatedAt(createdAt);
 
         List<UserEntity> users = List.of(firstUser, secondUser, thirdUser, fourthUser);
@@ -107,30 +104,26 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("Users were found."))
                 .andExpect(jsonPath("$.data.recordCount").value(4))
-                .andExpect(jsonPath("$.data.records.[0].id").value(firstRandomUUID))
+                .andExpect(jsonPath("$.data.records.[0].id").value("55547"))
                 .andExpect(jsonPath("$.data.records.[0].username").value("username_test_1"))
                 .andExpect(jsonPath("$.data.records.[0].displayName").value("Username_Test_1"))
-                .andExpect(jsonPath("$.data.records.[0].pointsToAdd").value("0.0"))
-                .andExpect(jsonPath("$.data.records.[0].pointsAdded").value("0.0"))
-                .andExpect(jsonPath("$.data.records.[0].userId").value("55547"))
-                .andExpect(jsonPath("$.data.records.[1].id").value(secondRandomUUID))
+                .andExpect(jsonPath("$.data.records.[0].pointsToAdd").value("0"))
+                .andExpect(jsonPath("$.data.records.[0].pointsAdded").value("0"))
+                .andExpect(jsonPath("$.data.records.[1].id").value("555487"))
                 .andExpect(jsonPath("$.data.records.[1].username").value("username_test_2"))
                 .andExpect(jsonPath("$.data.records.[1].displayName").value("Username_Test_2"))
-                .andExpect(jsonPath("$.data.records.[1].pointsToAdd").value("0.0"))
-                .andExpect(jsonPath("$.data.records.[1].pointsAdded").value("0.0"))
-                .andExpect(jsonPath("$.data.records.[1].userId").value("555487"))
-                .andExpect(jsonPath("$.data.records.[2].id").value(thirdRandomUUID))
+                .andExpect(jsonPath("$.data.records.[1].pointsToAdd").value("0"))
+                .andExpect(jsonPath("$.data.records.[1].pointsAdded").value("0"))
+                .andExpect(jsonPath("$.data.records.[2].id").value("5554787"))
                 .andExpect(jsonPath("$.data.records.[2].username").value("username_test_3"))
                 .andExpect(jsonPath("$.data.records.[2].displayName").value("Username_Test_3"))
-                .andExpect(jsonPath("$.data.records.[2].pointsToAdd").value("0.0"))
-                .andExpect(jsonPath("$.data.records.[2].pointsAdded").value("0.0"))
-                .andExpect(jsonPath("$.data.records.[2].userId").value("5554787"))
-                .andExpect(jsonPath("$.data.records.[3].id").value(fourthRandomUUID))
+                .andExpect(jsonPath("$.data.records.[2].pointsToAdd").value("0"))
+                .andExpect(jsonPath("$.data.records.[2].pointsAdded").value("0"))
+                .andExpect(jsonPath("$.data.records.[3].id").value("45461487"))
                 .andExpect(jsonPath("$.data.records.[3].username").value("username_test_4"))
                 .andExpect(jsonPath("$.data.records.[3].displayName").value("Username_Test_4"))
-                .andExpect(jsonPath("$.data.records.[3].pointsToAdd").value("0.0"))
-                .andExpect(jsonPath("$.data.records.[3].pointsAdded").value("0.0"))
-                .andExpect(jsonPath("$.data.records.[3].userId").value("45461487"));
+                .andExpect(jsonPath("$.data.records.[3].pointsToAdd").value("0"))
+                .andExpect(jsonPath("$.data.records.[3].pointsAdded").value("0"));
 
 
     }
@@ -176,26 +169,23 @@ public class UserControllerTest {
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_throw_internal_error_users() throws Exception {
         String[] realUsers = new String[]{"161920081", "528689231", "47115827", "36413513"};
-        String firstRandomUUID = UUID.randomUUID().toString();
-        String secondRandomUUID = UUID.randomUUID().toString();
-        String thirdRandomUUID = UUID.randomUUID().toString();
-        String fourthRandomUUID = UUID.randomUUID().toString();
+        
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiefsdfds", "zvinniie", 0.0, 0.0);
-        firstUser.setId(firstRandomUUID);
+        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiefsdfds", "zvinniie", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisafsdfds", "Hiromisak", 0.0, 0.0);
-        secondUser.setId(secondRandomUUID);
+        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisafsdfds", "Hiromisak", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilvafsdfds", "TheAlbertSilva", 0.0, 0.0);
-        thirdUser.setId(thirdRandomUUID);
+        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilvafsdfds", "TheAlbertSilva", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         thirdUser.setCreatedAt(createdAt);
 
-        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalllfsdfds", "MrFalll", 0.0, 0.0);
-        fourthUser.setId(fourthRandomUUID);
+        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalllfsdfds", "MrFalll", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         fourthUser.setCreatedAt(createdAt);
 
         List<UserEntity> users = List.of(firstUser, secondUser, thirdUser, fourthUser);
@@ -218,10 +208,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_fetch_users() throws Exception {
-        String firstRandomUUID = UUID.randomUUID().toString();
-        String secondRandomUUID = UUID.randomUUID().toString();
-        String thirdRandomUUID = UUID.randomUUID().toString();
-        String fourthRandomUUID = UUID.randomUUID().toString();
+        
         Random random = new Random();
         String firstRandomId = String.valueOf(random.nextInt(50000));
         String secondRandomId = String.valueOf(random.nextInt(50000));
@@ -229,20 +216,20 @@ public class UserControllerTest {
         String fourthRandomId = String.valueOf(random.nextInt(50000));
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(Long.parseLong(firstRandomId), "SASDSAusername_test_1", "Username_Test_1", 0.0, 0.0);
-        firstUser.setId(firstRandomUUID);
+        UserEntity firstUser = new UserEntity(Long.parseLong(firstRandomId), "SASDSAusername_test_1", "Username_Test_1", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(Long.parseLong(secondRandomId), "DSADASusername_test_2", "Username_Test_2", 0.0, 0.0);
-        secondUser.setId(secondRandomUUID);
+        UserEntity secondUser = new UserEntity(Long.parseLong(secondRandomId), "DSADASusername_test_2", "Username_Test_2", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(Long.parseLong(thirdRandomId), "DASDSAusername_test_3", "Username_Test_3", 0.0, 0.0);
-        thirdUser.setId(thirdRandomUUID);
+        UserEntity thirdUser = new UserEntity(Long.parseLong(thirdRandomId), "DASDSAusername_test_3", "Username_Test_3", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         thirdUser.setCreatedAt(createdAt);
 
-        UserEntity fourthUser = new UserEntity(Long.parseLong(fourthRandomId), "DSDASDusername_test_4", "Username_Test_4", 0.0, 0.0);
-        fourthUser.setId(fourthRandomUUID);
+        UserEntity fourthUser = new UserEntity(Long.parseLong(fourthRandomId), "DSDASDusername_test_4", "Username_Test_4", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         fourthUser.setCreatedAt(createdAt);
 
         TwitchUserModel userModel = createUserModel(firstRandomId, secondRandomId, thirdRandomId, fourthRandomId);
@@ -277,10 +264,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_fetch_only_one_user() throws Exception {
-        String firstRandomUUID = UUID.randomUUID().toString();
-        String secondRandomUUID = UUID.randomUUID().toString();
-        String thirdRandomUUID = UUID.randomUUID().toString();
-        String fourthRandomUUID = UUID.randomUUID().toString();
+        
         Random random = new Random();
         String firstRandomId = String.valueOf(random.nextInt(50000));
         String secondRandomId = String.valueOf(random.nextInt(50000));
@@ -288,20 +272,20 @@ public class UserControllerTest {
         String fourthRandomId = String.valueOf(random.nextInt(50000));
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(Long.parseLong(firstRandomId), "username_test_1", "Username_Test_1", 0.0, 0.0);
-        firstUser.setId(firstRandomUUID);
+        UserEntity firstUser = new UserEntity(Long.parseLong(firstRandomId), "username_test_1", "Username_Test_1", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(Long.parseLong(secondRandomId), "username_test_2", "Username_Test_2", 0.0, 0.0);
-        secondUser.setId(secondRandomUUID);
+        UserEntity secondUser = new UserEntity(Long.parseLong(secondRandomId), "username_test_2", "Username_Test_2", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(Long.parseLong(thirdRandomId), "username_test_3", "Username_Test_3", 0.0, 0.0);
-        thirdUser.setId(thirdRandomUUID);
+        UserEntity thirdUser = new UserEntity(Long.parseLong(thirdRandomId), "username_test_3", "Username_Test_3", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         thirdUser.setCreatedAt(createdAt);
 
-        UserEntity fourthUser = new UserEntity(Long.parseLong(fourthRandomId), "DSDASDusername_test_4", "Username_Test_4", 0.0, 0.0);
-        fourthUser.setId(fourthRandomUUID);
+        UserEntity fourthUser = new UserEntity(Long.parseLong(fourthRandomId), "DSDASDusername_test_4", "Username_Test_4", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         fourthUser.setCreatedAt(createdAt);
 
         TwitchUserModel userModel = createUserModel(firstRandomId, secondRandomId, thirdRandomId, fourthRandomId);
@@ -336,10 +320,7 @@ public class UserControllerTest {
     @Test
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_fetch_any_users() throws Exception {
-        String firstRandomUUID = UUID.randomUUID().toString();
-        String secondRandomUUID = UUID.randomUUID().toString();
-        String thirdRandomUUID = UUID.randomUUID().toString();
-        String fourthRandomUUID = UUID.randomUUID().toString();
+        
         Random random = new Random();
         String firstRandomId = String.valueOf(random.nextInt(50000));
         String secondRandomId = String.valueOf(random.nextInt(50000));
@@ -347,20 +328,20 @@ public class UserControllerTest {
         String fourthRandomId = String.valueOf(random.nextInt(50000));
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(Long.parseLong(firstRandomId), "username_test_1", "Username_Test_1", 0.0, 0.0);
-        firstUser.setId(firstRandomUUID);
+        UserEntity firstUser = new UserEntity(Long.parseLong(firstRandomId), "username_test_1", "Username_Test_1", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(Long.parseLong(secondRandomId), "username_test_2", "Username_Test_2", 0.0, 0.0);
-        secondUser.setId(secondRandomUUID);
+        UserEntity secondUser = new UserEntity(Long.parseLong(secondRandomId), "username_test_2", "Username_Test_2", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(Long.parseLong(thirdRandomId), "username_test_3", "Username_Test_3", 0.0, 0.0);
-        thirdUser.setId(thirdRandomUUID);
+        UserEntity thirdUser = new UserEntity(Long.parseLong(thirdRandomId), "username_test_3", "Username_Test_3", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         thirdUser.setCreatedAt(createdAt);
 
-        UserEntity fourthUser = new UserEntity(Long.parseLong(fourthRandomId), "username_test_4", "Username_Test_4", 0.0, 0.0);
-        fourthUser.setId(fourthRandomUUID);
+        UserEntity fourthUser = new UserEntity(Long.parseLong(fourthRandomId), "username_test_4", "Username_Test_4", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         fourthUser.setCreatedAt(createdAt);
 
         TwitchUserModel userModel = createUserModel(firstRandomId, secondRandomId, thirdRandomId, fourthRandomId);

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 import retrofit2.Call;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -99,7 +100,7 @@ public class UserServiceImpl implements UserService {
             UserEntity user = new UserEntity(userMessageDto.getUserId(),
                     userMessageDto.getUsername(),
                     userMessageDto.getDisplayName(),
-                    0.0, 0.0);
+                    BigDecimal.ZERO, BigDecimal.ZERO);
             return userRepository.save(user);
         }
 
@@ -150,7 +151,7 @@ public class UserServiceImpl implements UserService {
     private UserEntity getUserFetched(Optional<UserEntity> userEntity, TwitchUserModel twitchUser) {
         UserEntity user = new UserEntity();
         if (userEntity.isEmpty()) {
-            user.setUserId(Long.parseLong(twitchUser.getData().get(0).getId()));
+            user.setId(Long.parseLong(twitchUser.getData().get(0).getId()));
             user.setUsername(twitchUser.getData().get(0).getLogin());
             user.setDisplayName(twitchUser.getData().get(0).getDisplay_name());
 
@@ -185,7 +186,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public TwitchUserModel getTwitchUsersByIds(List<UserEntity> userEntityList) throws IOException {
 
-        String[] userIds = userEntityList.stream().map(userEntity -> userEntity.getUserId().toString()).toArray(String[]::new);
+        String[] userIds = userEntityList.stream().map(userEntity -> userEntity.getId().toString()).toArray(String[]::new);
         TwitchToken twitchToken = TwitchToken.getInstance();
 
         final String TOKEN = twitchToken.token;
@@ -212,7 +213,7 @@ public class UserServiceImpl implements UserService {
 
         for (TwitchUserModelData userModelData : twitchUserModelDataList) {
             List<UserEntity> userDifferent = userEntityList.stream()
-                    .filter(user -> user.getUserId() == Long.parseLong(userModelData.getId()) && !user.equalsTwitchUser(userModelData))
+                    .filter(user -> user.getId() == Long.parseLong(userModelData.getId()) && !user.equalsTwitchUser(userModelData))
                     .collect(Collectors.toList());
 
             if (!userDifferent.isEmpty()) {
@@ -236,7 +237,7 @@ public class UserServiceImpl implements UserService {
 
         for (UserEntity user : userEntityList) {
             boolean userInList = twitchUserModelDataList.stream()
-                    .anyMatch(userModel -> Long.parseLong(userModel.getId()) == user.getUserId());
+                    .anyMatch(userModel -> Long.parseLong(userModel.getId()) == user.getId());
 
             if (!userInList) {
                 usersDeleted.add(user);

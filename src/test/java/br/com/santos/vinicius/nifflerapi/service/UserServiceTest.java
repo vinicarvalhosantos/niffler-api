@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -38,26 +39,18 @@ public class UserServiceTest {
 
     @Test
     public void it_should_get_all_users() {
-        String firstRandomUUID = UUID.randomUUID().toString();
-        String secondRandomUUID = UUID.randomUUID().toString();
-        String thirdRandomUUID = UUID.randomUUID().toString();
-        String fourthRandomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(55547L, "username_test_1", "Username_Test_1", 0.0, 0.0);
-        firstUser.setId(firstRandomUUID);
+        UserEntity firstUser = new UserEntity(55547L, "username_test_1", "Username_Test_1", BigDecimal.ZERO, BigDecimal.ZERO);
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(555487L, "username_test_2", "Username_Test_2", 0.0, 0.0);
-        secondUser.setId(secondRandomUUID);
+        UserEntity secondUser = new UserEntity(555487L, "username_test_2", "Username_Test_2", BigDecimal.ZERO, BigDecimal.ZERO);
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(5554787L, "username_test_3", "Username_Test_3", 0.0, 0.0);
-        thirdUser.setId(thirdRandomUUID);
+        UserEntity thirdUser = new UserEntity(5554787L, "username_test_3", "Username_Test_3", BigDecimal.ZERO, BigDecimal.ZERO);
         thirdUser.setCreatedAt(createdAt);
 
-        UserEntity fourthUser = new UserEntity(45461487L, "username_test_4", "Username_Test_4", 0.0, 0.0);
-        fourthUser.setId(fourthRandomUUID);
+        UserEntity fourthUser = new UserEntity(45461487L, "username_test_4", "Username_Test_4", BigDecimal.ZERO, BigDecimal.ZERO);
         fourthUser.setCreatedAt(createdAt);
 
         List<UserEntity> users = List.of(firstUser, secondUser, thirdUser, fourthUser);
@@ -80,26 +73,18 @@ public class UserServiceTest {
 
     @Test
     public void it_should_fetch_users() throws IOException, InterruptedException {
-        String firstRandomUUID = UUID.randomUUID().toString();
-        String secondRandomUUID = UUID.randomUUID().toString();
-        String thirdRandomUUID = UUID.randomUUID().toString();
-        String fourthRandomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiefsdfds", "zvinniiegfdghfdgf", 0.0, 0.0);
-        firstUser.setId(firstRandomUUID);
+        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiefsdfds", "zvinniiegfdghfdgf", BigDecimal.ZERO, BigDecimal.ZERO);
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisafsdfds", "Hiromisakgdfgfgf", 0.0, 0.0);
-        secondUser.setId(secondRandomUUID);
+        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisafsdfds", "Hiromisakgdfgfgf", BigDecimal.ZERO, BigDecimal.ZERO);
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilvafsdfds", "TheAlbertSilvagfdgfd", 0.0, 0.0);
-        thirdUser.setId(thirdRandomUUID);
+        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilvafsdfds", "TheAlbertSilvagfdgfd", BigDecimal.ZERO, BigDecimal.ZERO);
         thirdUser.setCreatedAt(createdAt);
 
-        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalllfsdfds", "MrFalll", 0.0, 0.0);
-        fourthUser.setId(fourthRandomUUID);
+        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalllfsdfds", "MrFalll", BigDecimal.ZERO, BigDecimal.ZERO);
         fourthUser.setCreatedAt(createdAt);
 
         List<UserEntity> users = List.of(firstUser, secondUser, thirdUser, fourthUser);
@@ -114,26 +99,23 @@ public class UserServiceTest {
 
     @Test
     public void it_should_fetch_any_users() throws IOException, InterruptedException {
-        String firstRandomUUID = UUID.randomUUID().toString();
-        String secondRandomUUID = UUID.randomUUID().toString();
-        String thirdRandomUUID = UUID.randomUUID().toString();
-        String fourthRandomUUID = UUID.randomUUID().toString();
+        
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniie", "zvinniie", 0.0, 0.0);
-        firstUser.setId(firstRandomUUID);
+        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniie", "zvinniie", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisak", "Hiromisak", 0.0, 0.0);
-        secondUser.setId(secondRandomUUID);
+        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisak", "Hiromisak", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilva", "TheAlbertSilva", 0.0, 0.0);
-        thirdUser.setId(thirdRandomUUID);
+        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilva", "TheAlbertSilva", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         thirdUser.setCreatedAt(createdAt);
 
-        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalll", "MrFalll", 0.0, 0.0);
-        fourthUser.setId(fourthRandomUUID);
+        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalll", "MrFalll", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         fourthUser.setCreatedAt(createdAt);
 
         List<UserEntity> users = List.of(firstUser, secondUser, thirdUser, fourthUser);
@@ -148,26 +130,23 @@ public class UserServiceTest {
 
     @Test
     public void it_should_fetch_only_one_user() throws IOException, InterruptedException {
-        String firstRandomUUID = UUID.randomUUID().toString();
-        String secondRandomUUID = UUID.randomUUID().toString();
-        String thirdRandomUUID = UUID.randomUUID().toString();
-        String fourthRandomUUID = UUID.randomUUID().toString();
+        
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiedasdsafd", "zvinniie", 0.0, 0.0);
-        firstUser.setId(firstRandomUUID);
+        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiedasdsafd", "zvinniie", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisak", "Hiromisak", 0.0, 0.0);
-        secondUser.setId(secondRandomUUID);
+        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisak", "Hiromisak", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilva", "TheAlbertSilva", 0.0, 0.0);
-        thirdUser.setId(thirdRandomUUID);
+        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilva", "TheAlbertSilva", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         thirdUser.setCreatedAt(createdAt);
 
-        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalll", "MrFalll", 0.0, 0.0);
-        fourthUser.setId(fourthRandomUUID);
+        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalll", "MrFalll", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         fourthUser.setCreatedAt(createdAt);
 
         List<UserEntity> users = List.of(firstUser, secondUser, thirdUser, fourthUser);
@@ -182,31 +161,27 @@ public class UserServiceTest {
 
     @Test
     public void it_should_fetch_when_user_is_deleted() throws IOException, InterruptedException {
-        String firstRandomUUID = UUID.randomUUID().toString();
-        String secondRandomUUID = UUID.randomUUID().toString();
-        String thirdRandomUUID = UUID.randomUUID().toString();
-        String fourthRandomUUID = UUID.randomUUID().toString();
-        String fivethRandomUUID = UUID.randomUUID().toString();
+
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiedasdsafd", "zvinniie", 0.0, 0.0);
-        firstUser.setId(firstRandomUUID);
+        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiedasdsafd", "zvinniie", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisak", "Hiromisak", 0.0, 0.0);
-        secondUser.setId(secondRandomUUID);
+        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisak", "Hiromisak", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilva", "TheAlbertSilva", 0.0, 0.0);
-        thirdUser.setId(thirdRandomUUID);
+        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilva", "TheAlbertSilva", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         thirdUser.setCreatedAt(createdAt);
 
-        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalll", "MrFalll", 0.0, 0.0);
-        fourthUser.setId(fourthRandomUUID);
+        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalll", "MrFalll", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         fourthUser.setCreatedAt(createdAt);
 
-        UserEntity fivethUser = new UserEntity(Long.parseLong("14545675"), "other_user", "other_user", 0.0, 0.0);
-        fivethUser.setId(fivethRandomUUID);
+        UserEntity fivethUser = new UserEntity(Long.parseLong("14545675"), "other_user", "other_user", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         fivethUser.setCreatedAt(createdAt);
 
         List<UserEntity> users = List.of(firstUser, secondUser, thirdUser, fourthUser, fivethUser);
@@ -221,31 +196,27 @@ public class UserServiceTest {
 
     @Test
     public void it_should_fetch_when_bad_request() throws IOException, InterruptedException {
-        String firstRandomUUID = UUID.randomUUID().toString();
-        String secondRandomUUID = UUID.randomUUID().toString();
-        String thirdRandomUUID = UUID.randomUUID().toString();
-        String fourthRandomUUID = UUID.randomUUID().toString();
-        String fivethRandomUUID = UUID.randomUUID().toString();
+
         Date createdAt = new Date();
 
-        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiedasdsafd", "zvinniie", 0.0, 0.0);
-        firstUser.setId(firstRandomUUID);
+        UserEntity firstUser = new UserEntity(Long.parseLong(realUsers[0]), "zvinniiedasdsafd", "zvinniie", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         firstUser.setCreatedAt(createdAt);
 
-        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisak", "Hiromisak", 0.0, 0.0);
-        secondUser.setId(secondRandomUUID);
+        UserEntity secondUser = new UserEntity(Long.parseLong(realUsers[1]), "hiromisak", "Hiromisak", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         secondUser.setCreatedAt(createdAt);
 
-        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilva", "TheAlbertSilva", 0.0, 0.0);
-        thirdUser.setId(thirdRandomUUID);
+        UserEntity thirdUser = new UserEntity(Long.parseLong(realUsers[2]), "thealbertsilva", "TheAlbertSilva", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         thirdUser.setCreatedAt(createdAt);
 
-        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalll", "MrFalll", 0.0, 0.0);
-        fourthUser.setId(fourthRandomUUID);
+        UserEntity fourthUser = new UserEntity(Long.parseLong(realUsers[3]), "mrfalll", "MrFalll", BigDecimal.ZERO, BigDecimal.ZERO);
+        
         fourthUser.setCreatedAt(createdAt);
 
-        UserEntity fivethUser = new UserEntity(14445478744L, "other_user", "other_user", 0.0, 0.0);
-        fivethUser.setId(fivethRandomUUID);
+        UserEntity fivethUser = new UserEntity(14445478744L, "other_user", "other_user", BigDecimal.ZERO, BigDecimal.ZERO);
+
         fivethUser.setCreatedAt(createdAt);
 
         List<UserEntity> users = List.of(firstUser, secondUser, thirdUser, fourthUser, fivethUser);
@@ -260,11 +231,11 @@ public class UserServiceTest {
 
     @Test
     public void should_fetch_user_by_username() throws IOException {
-        String randomUUID = UUID.randomUUID().toString();
+
         Date createdAt = new Date();
 
-        UserEntity userEntity = new UserEntity(161920081L, "zvinniie", "zvinniiesss", 0.0, 0.0);
-        userEntity.setId(randomUUID);
+        UserEntity userEntity = new UserEntity(161920081L, "zvinniie", "zvinniiesss", BigDecimal.ZERO, BigDecimal.ZERO);
+
         userEntity.setCreatedAt(createdAt);
 
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.of(userEntity));
@@ -272,16 +243,16 @@ public class UserServiceTest {
         UserEntity response = userService.fetchUserByUsername("zvinniie");
 
         assertNotNull(response);
-        assertEquals(161920081L, response.getUserId());
+        assertEquals(161920081L, response.getId());
     }
 
     @Test
     public void should_fetch_user_by_username_when_user_not_in_database() throws IOException {
-        String randomUUID = UUID.randomUUID().toString();
+
         Date createdAt = new Date();
 
-        UserEntity userEntity = new UserEntity(161920081L, "zvinniie", "zvinniiesss", 0.0, 0.0);
-        userEntity.setId(randomUUID);
+        UserEntity userEntity = new UserEntity(161920081L, "zvinniie", "zvinniiesss", BigDecimal.ZERO, BigDecimal.ZERO);
+
         userEntity.setCreatedAt(createdAt);
 
         when(userRepository.findByUsername(anyString())).thenReturn(Optional.empty());
@@ -289,7 +260,7 @@ public class UserServiceTest {
         UserEntity response = userService.fetchUserByUsername("zvinniie");
 
         assertNotNull(response);
-        assertEquals(161920081L, response.getUserId());
+        assertEquals(161920081L, response.getId());
     }
 
     @Test
@@ -317,7 +288,7 @@ public class UserServiceTest {
         userMessageDto.setSubscriptionTier(1);
 
         UserEntity user = new UserEntity();
-        user.setUserId(55488L);
+        user.setId(55488L);
         user.setUsername("zvinniie");
         user.setDisplayName("zvinniie");
 
@@ -327,7 +298,7 @@ public class UserServiceTest {
         UserEntity response = userService.fetchFromUserMessage(userMessageDto);
 
         assertNotNull(response);
-        assertEquals(response.getUserId(), userMessageDto.getUserId());
+        assertEquals(response.getId(), userMessageDto.getUserId());
     }
 
     @Test
@@ -345,7 +316,7 @@ public class UserServiceTest {
         userMessageDto.setSubscriptionTier(1);
 
         UserEntity user = new UserEntity();
-        user.setUserId(55488L);
+        user.setId(55488L);
         user.setUsername("zvinniie");
         user.setDisplayName("zvinniie");
 
@@ -355,14 +326,14 @@ public class UserServiceTest {
         UserEntity response = userService.fetchFromUserMessage(userMessageDto);
 
         assertNotNull(response);
-        assertEquals(response.getUserId(), userMessageDto.getUserId());
+        assertEquals(response.getId(), userMessageDto.getUserId());
     }
 
     @Test
     public void should_save_user() {
 
         UserEntity user = new UserEntity();
-        user.setUserId(55488L);
+        user.setId(55488L);
         user.setUsername("zvinniie");
         user.setDisplayName("zvinniie");
 
@@ -371,7 +342,7 @@ public class UserServiceTest {
         UserEntity response = userService.saveUser(user);
 
         assertNotNull(response);
-        assertEquals(response.getUserId(), user.getUserId());
+        assertEquals(response.getId(), user.getId());
     }
 
 }

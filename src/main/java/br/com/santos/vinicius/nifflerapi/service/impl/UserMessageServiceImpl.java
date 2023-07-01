@@ -51,12 +51,11 @@ public class UserMessageServiceImpl implements UserMessageService {
 
         UserEntity user = userService.fetchFromUserMessage(userMessageDto);
 
-        Long userId = user.getUserId();
         String message = userMessageDto.getMessage();
         int messageLength = userMessageDto.messageLength();
         BigDecimal pointsToAdd = BigDecimal.ZERO;
 
-        LastUserMessageEntity lastUserMessage = lastUserMessageService.findUserLastMessage(userId);
+        LastUserMessageEntity lastUserMessage = lastUserMessageService.findUserLastMessage(user);
 
         log.info("Comparing the messages.");
         double similarity = lastUserMessage.compareMessages(message);
@@ -64,7 +63,7 @@ public class UserMessageServiceImpl implements UserMessageService {
         if (StringUtil.isSpam(message) || similarity >= 0.7) {
             log.info("The message sent is a spam, user will not receive points this message.");
             lastUserMessageService.updateUserLastMessage(lastUserMessage, message);
-            UserMessageEntity userMessage = new UserMessageEntity(userId, messageLength, pointsToAdd, true);
+            UserMessageEntity userMessage = new UserMessageEntity(user, messageLength, pointsToAdd, true);
             userMessageRepository.save(userMessage);
             return;
         }
@@ -72,9 +71,9 @@ public class UserMessageServiceImpl implements UserMessageService {
         pointsToAdd = calculatePointsToAdd(userMessageDto, messageLength);
 
         log.info("Finishing and saving the message and points information.");
-        UserMessageEntity userMessage = new UserMessageEntity(user.getUserId(), messageLength, pointsToAdd, false);
+        UserMessageEntity userMessage = new UserMessageEntity(user, messageLength, pointsToAdd, false);
         userMessageRepository.save(userMessage);
-        user.setPointsToAdd(pointsToAdd.doubleValue());
+        user.setPointsToAdd(pointsToAdd);
         lastUserMessageService.updateUserLastMessage(lastUserMessage, message);
         userService.saveUser(user);
     }

@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -17,9 +19,9 @@ public class BlacklistEntityTest {
 
     @Test
     public void it_should_test_entity(){
-        BlacklistEntity blacklist = new BlacklistEntity("zvinniie", 55448L);
-        UserEntity user = new UserEntity(55448L, "zvinniie", "zvinniie",
-                0.0, 0.0);
+        UserEntity user = new UserEntity(55448L, "zvinniie", "zvinniie", BigDecimal.ZERO, BigDecimal.ZERO);
+        BlacklistEntity blacklist = new BlacklistEntity("zvinniie", user);
+
 
         assertTrue(blacklist.equalsTwitchUser(user));
         assertTrue(blacklist.equalsTwitchUser(blacklist));

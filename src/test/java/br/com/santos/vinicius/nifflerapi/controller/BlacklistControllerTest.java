@@ -19,7 +19,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -27,7 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -40,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 import java.util.Date;
 import java.util.List;
@@ -79,25 +78,21 @@ public class BlacklistControllerTest {
     @Test
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_add_user_in_blacklist() throws Exception {
+        UserEntity user = new UserEntity(55547L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
+        Date createdAt = new Date();
+        user.setCreatedAt(createdAt);
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
-        String randomUUID = UUID.randomUUID().toString();
-        Date createdAt = new Date();
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(5545L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
         SuccessResponse successResponse = new SuccessResponse(List.of(blacklistEntityExpected), "User added in blacklist.");
         ResponseEntity<Response> requestResponse = ResponseEntity.status(HttpStatus.CREATED).body(new Response(successResponse));
 
-        String randomUserUUID = UUID.randomUUID().toString();
-
-        UserEntity user = new UserEntity(55547L, "username_test", "username_test", 0.0, 0.0);
-        user.setId(randomUserUUID);
-        user.setCreatedAt(createdAt);
 
         BlacklistDto blacklistDtoRequest = new BlacklistDto("username_test");
 
@@ -130,9 +125,8 @@ public class BlacklistControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data.message").value("User added in blacklist."))
                 .andExpect(jsonPath("$.data.recordCount").value(1))
-                .andExpect(jsonPath("$.data.records.[0].id").value(randomUUID))
-                .andExpect(jsonPath("$.data.records.[0].username").value("username_test"))
-                .andExpect(jsonPath("$.data.records.[0].userId").value("55547"));
+                .andExpect(jsonPath("$.data.records.[0].id").value("5545"))
+                .andExpect(jsonPath("$.data.records.[0].username").value("username_test"));
 
 
     }
@@ -140,16 +134,16 @@ public class BlacklistControllerTest {
     @Test
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_get_user_from_blacklist_by_username() throws Exception {
+        UserEntity user = new UserEntity(55547L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
+        Date createdAt = new Date();
+        user.setCreatedAt(createdAt);
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
-        String randomUUID = UUID.randomUUID().toString();
-        Date createdAt = new Date();
-
         String input = "username_test";
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(5545L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
@@ -168,9 +162,8 @@ public class BlacklistControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("User found in blacklist."))
                 .andExpect(jsonPath("$.data.recordCount").value(1))
-                .andExpect(jsonPath("$.data.records.[0].id").value(randomUUID))
-                .andExpect(jsonPath("$.data.records.[0].username").value("username_test"))
-                .andExpect(jsonPath("$.data.records.[0].userId").value("55547"));
+                .andExpect(jsonPath("$.data.records.[0].id").value("5545"))
+                .andExpect(jsonPath("$.data.records.[0].username").value("username_test"));
 
 
     }
@@ -178,16 +171,16 @@ public class BlacklistControllerTest {
     @Test
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_get_user_from_blacklist_by_userid() throws Exception {
+        UserEntity user = new UserEntity(55547L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
+        Date createdAt = new Date();
+        user.setCreatedAt(createdAt);
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
-        String randomUUID = UUID.randomUUID().toString();
-        Date createdAt = new Date();
-
         Long input = 55547L;
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(4574L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
@@ -206,9 +199,8 @@ public class BlacklistControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("User found in blacklist."))
                 .andExpect(jsonPath("$.data.recordCount").value(1))
-                .andExpect(jsonPath("$.data.records.[0].id").value(randomUUID))
-                .andExpect(jsonPath("$.data.records.[0].username").value("username_test"))
-                .andExpect(jsonPath("$.data.records.[0].userId").value("55547"));
+                .andExpect(jsonPath("$.data.records.[0].id").value("4574L"))
+                .andExpect(jsonPath("$.data.records.[0].username").value("username_test"));
 
 
     }
@@ -216,16 +208,15 @@ public class BlacklistControllerTest {
     @Test
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_delete_user_from_blacklist_by_username() throws Exception {
-
-        BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
-
-        String randomUUID = UUID.randomUUID().toString();
+        UserEntity user = new UserEntity(55547L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         Date createdAt = new Date();
+        user.setCreatedAt(createdAt);
+        BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
         String input = "username_test";
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(5474L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
@@ -248,16 +239,15 @@ public class BlacklistControllerTest {
     @Test
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_delete_user_from_blacklist_by_userid() throws Exception {
-
-        BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
-
-        String randomUUID = UUID.randomUUID().toString();
+        UserEntity user = new UserEntity(55547L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         Date createdAt = new Date();
+        user.setCreatedAt(createdAt);
+        BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
         Long input = 55547L;
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(4545741L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
@@ -280,31 +270,31 @@ public class BlacklistControllerTest {
     @Test
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_get_all_users_from_blacklist() throws Exception {
-
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
         List<BlacklistEntity> blacklistEntities = new ArrayList<>();
 
-        String randomUUID = UUID.randomUUID().toString();
-        String randomUUIDOther = UUID.randomUUID().toString();
-        String randomUUIDOtherOther = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(2254L);
         blacklistEntityExpected.setUsername("username_test_1");
         blacklistEntityExpected.setCreatedAt(createdAt);
         blacklistEntities.add(blacklistEntityExpected);
 
+        UserEntity user2 = new UserEntity(555487L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
+
         blacklistEntityExpected = new BlacklistEntity();
-        blacklistEntityExpected.setUserId(555487L);
-        blacklistEntityExpected.setId(randomUUIDOther);
+        blacklistEntityExpected.setUser(user2);
+        blacklistEntityExpected.setId(5478L);
         blacklistEntityExpected.setUsername("username_test_2");
         blacklistEntityExpected.setCreatedAt(createdAt);
         blacklistEntities.add(blacklistEntityExpected);
 
+        UserEntity user3 = new UserEntity(5554787L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         blacklistEntityExpected = new BlacklistEntity();
-        blacklistEntityExpected.setUserId(5554787L);
-        blacklistEntityExpected.setId(randomUUIDOtherOther);
+        blacklistEntityExpected.setUser(user3);
+        blacklistEntityExpected.setId(87897L);
         blacklistEntityExpected.setUsername("username_test_3");
         blacklistEntityExpected.setCreatedAt(createdAt);
         blacklistEntities.add(blacklistEntityExpected);
@@ -325,15 +315,12 @@ public class BlacklistControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.message").value("Users were found in blacklist."))
                 .andExpect(jsonPath("$.data.recordCount").value(3))
-                .andExpect(jsonPath("$.data.records.[0].id").value(randomUUID))
+                .andExpect(jsonPath("$.data.records.[0].id").value("2254L"))
                 .andExpect(jsonPath("$.data.records.[0].username").value("username_test_1"))
-                .andExpect(jsonPath("$.data.records.[0].userId").value("55547"))
-                .andExpect(jsonPath("$.data.records.[1].id").value(randomUUIDOther))
+                .andExpect(jsonPath("$.data.records.[1].id").value("5478L"))
                 .andExpect(jsonPath("$.data.records.[1].username").value("username_test_2"))
-                .andExpect(jsonPath("$.data.records.[1].userId").value("555487"))
-                .andExpect(jsonPath("$.data.records.[2].id").value(randomUUIDOtherOther))
-                .andExpect(jsonPath("$.data.records.[2].username").value("username_test_3"))
-                .andExpect(jsonPath("$.data.records.[2].userId").value("5554787"));
+                .andExpect(jsonPath("$.data.records.[2].id").value("87897L"))
+                .andExpect(jsonPath("$.data.records.[2].username").value("username_test_3"));
 
 
     }
@@ -354,22 +341,15 @@ public class BlacklistControllerTest {
     @Test
     @WithMockUser(username = "zvinniie", password = "test password")
     public void it_should_throw_already_reported_exception() throws Exception {
-
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
-
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
+        user.setCreatedAt(createdAt);
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(55424L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
-
-        String randomUserUUID = UUID.randomUUID().toString();
-
-        UserEntity user = new UserEntity(55547L, "username_test", "username_test", 0.0, 0.0);
-        user.setId(randomUserUUID);
-        user.setCreatedAt(createdAt);
 
         BlacklistDto blacklistDtoRequest = new BlacklistDto("username_test");
 

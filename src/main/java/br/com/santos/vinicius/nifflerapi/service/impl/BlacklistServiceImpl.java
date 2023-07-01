@@ -47,10 +47,10 @@ public class BlacklistServiceImpl implements BlacklistService {
             throw new NoSuchElementFoundException(String.format("User '%s' does not exists.", username));
         }
 
-        Optional<BlacklistEntity> blacklistEntityOptional = blacklistRepository.findByUserId(user.getUserId());
+        Optional<BlacklistEntity> blacklistEntityOptional = blacklistRepository.findByUserId(user.getId());
 
         if (blacklistEntityOptional.isEmpty()) {
-            BlacklistEntity blacklistEntity = new BlacklistEntity(blacklistDto.getUsername(), user.getUserId());
+            BlacklistEntity blacklistEntity = new BlacklistEntity(blacklistDto.getUsername(), user);
             blacklistEntity = blacklistRepository.save(blacklistEntity);
             SuccessResponse successResponse = new SuccessResponse(List.of(blacklistEntity), "User added in blacklist.");
 

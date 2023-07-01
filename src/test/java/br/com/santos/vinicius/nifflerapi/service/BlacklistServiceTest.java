@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
@@ -22,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 
+import java.math.BigDecimal;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -48,21 +48,16 @@ public class BlacklistServiceTest {
 
     @Test
     public void it_should_add_user_in_blacklist() throws Exception {
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
-
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(24L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
-        String randomUserUUID = UUID.randomUUID().toString();
-
-        UserEntity user = new UserEntity(55547L, "username_test", "username_test", 0.0, 0.0);
-        user.setId(randomUserUUID);
         user.setCreatedAt(createdAt);
 
         BlacklistDto blacklistDtoRequest = new BlacklistDto("username_test");
@@ -89,21 +84,17 @@ public class BlacklistServiceTest {
 
     @Test(expected = NoSuchElementFoundException.class)
     public void it_should_NOT_add_user_in_blacklist_user_does_not_exists() throws Exception {
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(245L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
-        String randomUserUUID = UUID.randomUUID().toString();
-
-        UserEntity user = new UserEntity(55547L, "username_test", "username_test", 0.0, 0.0);
-        user.setId(randomUserUUID);
         user.setCreatedAt(createdAt);
 
         BlacklistDto blacklistDtoRequest = new BlacklistDto("username_test");
@@ -124,21 +115,17 @@ public class BlacklistServiceTest {
 
     @Test
     public void it_should_update_user_in_blacklist_when_user_change_username() throws Exception {
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
 
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(245L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
-        String randomUserUUID = UUID.randomUUID().toString();
-
-        UserEntity user = new UserEntity(55547L, "username_test_updated", "username_test", 0.0, 0.0);
-        user.setId(randomUserUUID);
         user.setCreatedAt(createdAt);
 
         BlacklistDto blacklistDtoRequest = new BlacklistDto("username_test");
@@ -166,21 +153,15 @@ public class BlacklistServiceTest {
 
     @Test(expected = ElementAlreadyReportedException.class)
     public void it_should_NOT_ad_user_in_blacklist_when_user_ALREADY_in_blacklist() throws Exception {
-
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
-
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(2455L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
-        String randomUserUUID = UUID.randomUUID().toString();
-
-        UserEntity user = new UserEntity(55547L, "username_test", "username_test", 0.0, 0.0);
-        user.setId(randomUserUUID);
         user.setCreatedAt(createdAt);
 
         BlacklistDto blacklistDtoRequest = new BlacklistDto("username_test");
@@ -205,16 +186,14 @@ public class BlacklistServiceTest {
 
     @Test
     public void it_should_get_user_from_blacklist_by_username() {
-
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
-
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
         String input = "username_test";
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(2255L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
@@ -228,7 +207,7 @@ public class BlacklistServiceTest {
 
     @Test(expected = NoSuchElementFoundException.class)
     public void it_should_not_found_user_from_blacklist_by_username() {
-
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
         String randomUUID = UUID.randomUUID().toString();
@@ -236,8 +215,8 @@ public class BlacklistServiceTest {
 
         String input = "username_test";
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(2445L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
@@ -248,16 +227,14 @@ public class BlacklistServiceTest {
 
     @Test
     public void it_should_get_user_from_blacklist_by_userid() {
-
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
-
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        Long input = 55547L;
+        Long input = 55448L;
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(22454L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
@@ -271,16 +248,14 @@ public class BlacklistServiceTest {
 
     @Test(expected = NoSuchElementFoundException.class)
     public void it_should_not_found_user_from_blacklist_by_userid() {
-
+        UserEntity user = new UserEntity(55547L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
-
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
         Long input = 55547L;
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(221445L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
@@ -291,16 +266,15 @@ public class BlacklistServiceTest {
 
     @Test
     public void it_should_delete_user_from_blacklist_by_username() {
-
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
         String input = "username_test";
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(224547L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
@@ -314,16 +288,15 @@ public class BlacklistServiceTest {
 
     @Test
     public void it_should_delete_user_from_blacklist_by_userid() {
-
+        UserEntity user = new UserEntity(55547L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
         Long input = 55547L;
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(52454L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
@@ -335,31 +308,31 @@ public class BlacklistServiceTest {
 
     @Test
     public void it_should_get_all_users_from_blacklist() {
-
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
         List<BlacklistEntity> blacklistEntities = new ArrayList<>();
 
-        String randomUUID = UUID.randomUUID().toString();
-        String randomUUIDOther = UUID.randomUUID().toString();
-        String randomUUIDOtherOther = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(2254L);
         blacklistEntityExpected.setUsername("username_test_1");
         blacklistEntityExpected.setCreatedAt(createdAt);
         blacklistEntities.add(blacklistEntityExpected);
 
+        UserEntity user2 = new UserEntity(555487L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
+
         blacklistEntityExpected = new BlacklistEntity();
-        blacklistEntityExpected.setUserId(555487L);
-        blacklistEntityExpected.setId(randomUUIDOther);
+        blacklistEntityExpected.setUser(user2);
+        blacklistEntityExpected.setId(5478L);
         blacklistEntityExpected.setUsername("username_test_2");
         blacklistEntityExpected.setCreatedAt(createdAt);
         blacklistEntities.add(blacklistEntityExpected);
 
+        UserEntity user3 = new UserEntity(5554787L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         blacklistEntityExpected = new BlacklistEntity();
-        blacklistEntityExpected.setUserId(5554787L);
-        blacklistEntityExpected.setId(randomUUIDOtherOther);
+        blacklistEntityExpected.setUser(user3);
+        blacklistEntityExpected.setId(87897L);
         blacklistEntityExpected.setUsername("username_test_3");
         blacklistEntityExpected.setCreatedAt(createdAt);
         blacklistEntities.add(blacklistEntityExpected);
@@ -375,34 +348,6 @@ public class BlacklistServiceTest {
     @Test(expected = NoSuchElementFoundException.class)
     public void it_should_not_found_when_get_all_users_from_blacklist() {
 
-        BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
-        List<BlacklistEntity> blacklistEntities = new ArrayList<>();
-
-        String randomUUID = UUID.randomUUID().toString();
-        String randomUUIDOther = UUID.randomUUID().toString();
-        String randomUUIDOtherOther = UUID.randomUUID().toString();
-        Date createdAt = new Date();
-
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
-        blacklistEntityExpected.setUsername("username_test_1");
-        blacklistEntityExpected.setCreatedAt(createdAt);
-        blacklistEntities.add(blacklistEntityExpected);
-
-        blacklistEntityExpected = new BlacklistEntity();
-        blacklistEntityExpected.setUserId(555487L);
-        blacklistEntityExpected.setId(randomUUIDOther);
-        blacklistEntityExpected.setUsername("username_test_2");
-        blacklistEntityExpected.setCreatedAt(createdAt);
-        blacklistEntities.add(blacklistEntityExpected);
-
-        blacklistEntityExpected = new BlacklistEntity();
-        blacklistEntityExpected.setUserId(5554787L);
-        blacklistEntityExpected.setId(randomUUIDOtherOther);
-        blacklistEntityExpected.setUsername("username_test_3");
-        blacklistEntityExpected.setCreatedAt(createdAt);
-        blacklistEntities.add(blacklistEntityExpected);
-
         when(blacklistRepository.findAll()).thenReturn(new ArrayList<>());
 
         blacklistService.getAllUsersInBlacklist();
@@ -410,16 +355,15 @@ public class BlacklistServiceTest {
 
     @Test
     public void it_should_get_user_from_blacklist() {
-
+        UserEntity user = new UserEntity(55448L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
-        Long input = 55547L;
+        Long input = 55448L;
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(5454L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 
@@ -432,16 +376,15 @@ public class BlacklistServiceTest {
 
     @Test
     public void it_should_get_user_from_blacklist_false() {
-
+        UserEntity user = new UserEntity(55547L, "username_test", "username_test", BigDecimal.ZERO, BigDecimal.ZERO);
         BlacklistEntity blacklistEntityExpected = new BlacklistEntity();
 
-        String randomUUID = UUID.randomUUID().toString();
         Date createdAt = new Date();
 
         Long input = 55547L;
 
-        blacklistEntityExpected.setUserId(55547L);
-        blacklistEntityExpected.setId(randomUUID);
+        blacklistEntityExpected.setUser(user);
+        blacklistEntityExpected.setId(55487L);
         blacklistEntityExpected.setUsername("username_test");
         blacklistEntityExpected.setCreatedAt(createdAt);
 

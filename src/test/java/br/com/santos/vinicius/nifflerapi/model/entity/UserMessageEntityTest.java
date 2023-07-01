@@ -21,18 +21,17 @@ public class UserMessageEntityTest {
 
     @Test
     public void it_should_test_getters() {
-        UserMessageEntity userMessage = new UserMessageEntity(55448L, 50,
+        UserEntity user = new UserEntity(55448L, "zvinniie", "zvinniie", BigDecimal.ZERO, BigDecimal.ZERO);
+        UserMessageEntity userMessage = new UserMessageEntity(user, 50,
                 new BigDecimal("50"), false);
         Date createdAt = new Date();
-        String uuid = UUID.randomUUID().toString();
         userMessage.setCreatedAt(createdAt);
-        userMessage.setId(uuid);
+        userMessage.setId(1L);
 
-        assertEquals(55448L, userMessage.getUserId().longValue());
+        assertEquals(55448L, userMessage.getId().longValue());
         assertEquals(50, userMessage.getMessageLength());
         assertEquals(new BigDecimal("50"), userMessage.getPointsToAdd());
         assertFalse(userMessage.isSpam());
-        assertEquals(uuid, userMessage.getId());
         assertEquals(createdAt, userMessage.getCreatedAt());
 
     }

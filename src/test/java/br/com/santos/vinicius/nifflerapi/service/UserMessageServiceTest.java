@@ -48,15 +48,15 @@ public class UserMessageServiceTest {
     @Test
     public void it_should_analyse_message() throws IOException {
         UserEntity user = new UserEntity();
-        user.setUserId(55488L);
+        user.setId(55488L);
         user.setUsername("zvinniie");
         user.setDisplayName("zvinniie");
 
-        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(55488L, "MESSAGE TEST");
+        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(user, "MESSAGE TEST");
 
         when(blacklistService.isUserInBlacklist(anyLong())).thenReturn(false);
         when(userService.fetchFromUserMessage(any(UserMessageDto.class))).thenReturn(user);
-        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(lastUserMessage);
+        when(lastUserMessageService.findUserLastMessage(any(UserEntity.class))).thenReturn(lastUserMessage);
 
         UserMessageDto userMessageDto = new UserMessageDto();
         userMessageDto.setMessage("INPUT MESSAGE TEST TO BE ANALYZED");
@@ -71,8 +71,8 @@ public class UserMessageServiceTest {
 
         userMessageService.messageAnalysis(userMessageDto);
 
-        lastUserMessage = new LastUserMessageEntity(55488L, "INPUT MESSAGE TEST TO BE ANALYZED");
-        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(lastUserMessage);
+        lastUserMessage = new LastUserMessageEntity(user, "INPUT MESSAGE TEST TO BE ANALYZED");
+        when(lastUserMessageService.findUserLastMessage(any(UserEntity.class))).thenReturn(lastUserMessage);
 
         assertEquals(userMessageDto.getMessage(), lastUserMessage.getLastMessage());
 
@@ -81,15 +81,15 @@ public class UserMessageServiceTest {
     @Test
     public void it_should_analyse_message_with_emotes() throws IOException {
         UserEntity user = new UserEntity();
-        user.setUserId(55488L);
+        user.setId(55488L);
         user.setUsername("zvinniie");
         user.setDisplayName("zvinniie");
 
-        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(55488L, "MESSAGE TEST BLI BLI BLI BLI BLI BLI BLI BLI BLI BLI BLI");
+        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(user, "MESSAGE TEST BLI BLI BLI BLI BLI BLI BLI BLI BLI BLI BLI");
 
         when(blacklistService.isUserInBlacklist(anyLong())).thenReturn(false);
         when(userService.fetchFromUserMessage(any(UserMessageDto.class))).thenReturn(user);
-        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(lastUserMessage);
+        when(lastUserMessageService.findUserLastMessage(any(UserEntity.class))).thenReturn(lastUserMessage);
 
         UserMessageDto userMessageDto = new UserMessageDto();
         userMessageDto.setMessage("mrfalllhmm INPUT MESSAGE TEST TO BE ANALYZED");
@@ -105,8 +105,8 @@ public class UserMessageServiceTest {
 
         userMessageService.messageAnalysis(userMessageDto);
 
-        lastUserMessage = new LastUserMessageEntity(55488L, "mrfalllhmm INPUT MESSAGE TEST TO BE ANALYZED");
-        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(lastUserMessage);
+        lastUserMessage = new LastUserMessageEntity(user, "mrfalllhmm INPUT MESSAGE TEST TO BE ANALYZED");
+        when(lastUserMessageService.findUserLastMessage(any(UserEntity.class))).thenReturn(lastUserMessage);
 
         assertEquals(userMessageDto.getMessage(), lastUserMessage.getLastMessage());
 
@@ -115,15 +115,15 @@ public class UserMessageServiceTest {
     @Test
     public void it_should_analyse_message_not_sub() throws IOException {
         UserEntity user = new UserEntity();
-        user.setUserId(55488L);
+        user.setId(55488L);
         user.setUsername("zvinniie");
         user.setDisplayName("zvinniie");
 
-        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(55488L, "MESSAGE TEST");
+        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(user, "MESSAGE TEST");
 
         when(blacklistService.isUserInBlacklist(anyLong())).thenReturn(false);
         when(userService.fetchFromUserMessage(any(UserMessageDto.class))).thenReturn(user);
-        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(lastUserMessage);
+        when(lastUserMessageService.findUserLastMessage(any(UserEntity.class))).thenReturn(lastUserMessage);
 
         UserMessageDto userMessageDto = new UserMessageDto();
         userMessageDto.setMessage("INPUT MESSAGE TEST TO BE ANALYZED");
@@ -138,8 +138,8 @@ public class UserMessageServiceTest {
 
         userMessageService.messageAnalysis(userMessageDto);
 
-        lastUserMessage = new LastUserMessageEntity(55488L, "INPUT MESSAGE TEST TO BE ANALYZED");
-        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(lastUserMessage);
+        lastUserMessage = new LastUserMessageEntity(user, "INPUT MESSAGE TEST TO BE ANALYZED");
+        when(lastUserMessageService.findUserLastMessage(any(UserEntity.class))).thenReturn(lastUserMessage);
 
         assertEquals(userMessageDto.getMessage(), lastUserMessage.getLastMessage());
 
@@ -147,6 +147,10 @@ public class UserMessageServiceTest {
 
     @Test
     public void it_should_not_analyse_message_user_in_blacklist() throws IOException {
+        UserEntity user = new UserEntity();
+        user.setId(55488L);
+        user.setUsername("zvinniie");
+        user.setDisplayName("zvinniie");
 
         when(blacklistService.isUserInBlacklist(anyLong())).thenReturn(true);
 
@@ -163,8 +167,8 @@ public class UserMessageServiceTest {
 
         userMessageService.messageAnalysis(userMessageDto);
 
-        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(null);
-        LastUserMessageEntity entity = lastUserMessageService.findUserLastMessage(55488L);
+        when(lastUserMessageService.findUserLastMessage(any(UserEntity.class))).thenReturn(null);
+        LastUserMessageEntity entity = lastUserMessageService.findUserLastMessage(user);
 
         assertNull(entity);
 
@@ -174,15 +178,15 @@ public class UserMessageServiceTest {
     public void it_should_not_analyse_message_user_repeated_message() throws IOException {
 
         UserEntity user = new UserEntity();
-        user.setUserId(55488L);
+        user.setId(55488L);
         user.setUsername("zvinniie");
         user.setDisplayName("zvinniie");
 
-        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(55488L, "MESSAGE TEST");
+        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(user, "MESSAGE TEST");
 
         when(blacklistService.isUserInBlacklist(anyLong())).thenReturn(false);
         when(userService.fetchFromUserMessage(any(UserMessageDto.class))).thenReturn(user);
-        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(lastUserMessage);
+        when(lastUserMessageService.findUserLastMessage(any(UserEntity.class))).thenReturn(lastUserMessage);
 
         UserMessageDto userMessageDto = new UserMessageDto();
         userMessageDto.setMessage("MESSAGE TEST");
@@ -205,15 +209,15 @@ public class UserMessageServiceTest {
     public void it_should_not_analyse_message_too_much_Ks() throws IOException {
 
         UserEntity user = new UserEntity();
-        user.setUserId(55488L);
+        user.setId(55488L);
         user.setUsername("zvinniie");
         user.setDisplayName("zvinniie");
 
-        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(55488L, "MESSAGE TEST");
+        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(user, "MESSAGE TEST");
 
         when(blacklistService.isUserInBlacklist(anyLong())).thenReturn(false);
         when(userService.fetchFromUserMessage(any(UserMessageDto.class))).thenReturn(user);
-        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(lastUserMessage);
+        when(lastUserMessageService.findUserLastMessage(any(UserEntity.class))).thenReturn(lastUserMessage);
 
         UserMessageDto userMessageDto = new UserMessageDto();
         userMessageDto.setMessage("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK");
@@ -236,15 +240,15 @@ public class UserMessageServiceTest {
     public void it_should_analyse_message_user_set_entity() throws IOException {
 
         UserEntity user = new UserEntity();
-        user.setUserId(55488L);
+        user.setId(55488L);
         user.setUsername("zvinniie");
         user.setDisplayName("zvinniie");
 
-        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(55488L, "TESTE");
+        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(user, "TESTE");
 
         when(blacklistService.isUserInBlacklist(anyLong())).thenReturn(false);
         when(userService.fetchFromUserMessage(any(UserMessageDto.class))).thenReturn(user);
-        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(lastUserMessage);
+        when(lastUserMessageService.findUserLastMessage(any(UserEntity.class))).thenReturn(lastUserMessage);
 
         UserMessageDto userMessageDto = new UserMessageDto();
         userMessageDto.setMessage("Message test input");
@@ -259,8 +263,7 @@ public class UserMessageServiceTest {
 
         UserMessageEntity userMessage = new UserMessageEntity();
         userMessage.setMessageLength(50);
-        userMessage.setId(UUID.randomUUID().toString());
-        userMessage.setUserId(55488L);
+        userMessage.setId(55488L);
         userMessage.setCreatedAt(new Date());
         userMessage.setSpam(false);
 
@@ -276,15 +279,15 @@ public class UserMessageServiceTest {
     public void it_should_analyse_message_only_emotes() throws IOException {
 
         UserEntity user = new UserEntity();
-        user.setUserId(55488L);
+        user.setId(55488L);
         user.setUsername("zvinniie");
         user.setDisplayName("zvinniie");
 
-        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(55488L, "TESTE");
+        LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(user, "TESTE");
 
         when(blacklistService.isUserInBlacklist(anyLong())).thenReturn(false);
         when(userService.fetchFromUserMessage(any(UserMessageDto.class))).thenReturn(user);
-        when(lastUserMessageService.findUserLastMessage(anyLong())).thenReturn(lastUserMessage);
+        when(lastUserMessageService.findUserLastMessage(any(UserEntity.class))).thenReturn(lastUserMessage);
 
         UserMessageDto userMessageDto = new UserMessageDto();
         userMessageDto.setMessage("mrfalllhm");

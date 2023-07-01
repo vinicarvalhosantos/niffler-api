@@ -1,6 +1,7 @@
 package br.com.santos.vinicius.nifflerapi.service.impl;
 
 import br.com.santos.vinicius.nifflerapi.model.entity.LastUserMessageEntity;
+import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
 import br.com.santos.vinicius.nifflerapi.repository.LastUserMessageRepository;
 import br.com.santos.vinicius.nifflerapi.service.LastUserMessageService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,13 +18,13 @@ public class LastUserMessageServiceImpl implements LastUserMessageService {
     LastUserMessageRepository lastUserMessageRepository;
 
     @Override
-    public LastUserMessageEntity findUserLastMessage(Long userId) {
+    public LastUserMessageEntity findUserLastMessage(UserEntity user) {
         log.info("Looking for users last message.");
-        Optional<LastUserMessageEntity> lastUserMessageEntity = lastUserMessageRepository.findLastUserMessageByUserId(userId);
+        Optional<LastUserMessageEntity> lastUserMessageEntity = lastUserMessageRepository.findLastUserMessageByUserId(user.getId());
 
         if (lastUserMessageEntity.isEmpty()) {
             log.info("User has no last message in this channel. Creating one empty.");
-            LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(userId, "");
+            LastUserMessageEntity lastUserMessage = new LastUserMessageEntity(user, "");
             return lastUserMessageRepository.save(lastUserMessage);
         }
 

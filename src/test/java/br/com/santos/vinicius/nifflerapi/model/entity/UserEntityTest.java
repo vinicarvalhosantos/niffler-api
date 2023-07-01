@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -23,7 +24,7 @@ public class UserEntityTest {
     public void it_should_test_twitch_users() {
 
         UserEntity user = new UserEntity(55448L, "zvinniie", "zvinniie",
-                0.0, 0.0);
+                BigDecimal.ZERO, BigDecimal.ZERO);
         TwitchUserModelData twitchUser = new TwitchUserModelData();
         twitchUser.setId("55448");
         twitchUser.setLogin("zvinniie");
@@ -40,7 +41,7 @@ public class UserEntityTest {
     public void it_should_test_user_message() {
 
         UserEntity user = new UserEntity(55448L, "zvinniie", "zvinniie",
-                0.0, 0.0);
+                BigDecimal.ZERO, BigDecimal.ZERO);
         UserMessageDto userMessage = new UserMessageDto();
         userMessage.setUserId(55448L);
         userMessage.setUsername("zvinniie");
