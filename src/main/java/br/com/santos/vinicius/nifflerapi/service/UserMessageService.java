@@ -10,4 +10,9 @@ public interface UserMessageService {
 
     void messageAnalysis(UserMessageDto userMessageDto) throws IOException;
 
+    void deleteUserMessage(String messageId);
+
+    void deleteUserLastMessage(Long userId);
+
+    void clearOldMessagePoints();
 }

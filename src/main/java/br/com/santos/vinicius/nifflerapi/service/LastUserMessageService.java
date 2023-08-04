@@ -11,4 +11,6 @@ public interface LastUserMessageService {
 
     void updateUserLastMessage(LastUserMessageEntity lastUserMessage, String newMessage);
 
+    void clearLastUserMessages();
+
 }

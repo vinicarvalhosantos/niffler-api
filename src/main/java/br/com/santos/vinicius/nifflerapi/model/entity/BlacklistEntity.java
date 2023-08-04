@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
@@ -38,7 +39,6 @@ public class BlacklistEntity implements Serializable {
 
     public BlacklistEntity(String username, UserEntity user) {
         this.user = user;
-        this.createdAt = new Date();
         this.username = username;
     }
 

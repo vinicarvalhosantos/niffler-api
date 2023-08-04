@@ -7,6 +7,6 @@ public interface EncryptService {
 
     String encrypt(String data);
 
-    String decrypt(String data);
+    boolean matches(String data, String encodedData);
 
 }

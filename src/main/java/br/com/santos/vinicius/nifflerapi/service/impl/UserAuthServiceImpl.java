@@ -58,9 +58,8 @@ public class UserAuthServiceImpl implements UserAuthService {
         }
 
         UserAuthEntity userAuth = userAuthEntity.get();
-        String passwordDecrypted = encryptService.decrypt(userAuth.getPassword());
 
-        if (!passwordDecrypted.equals(password)) {
+        if (!encryptService.matches(password, userAuth.getPassword())) {
             throw new NoSuchElementFoundException("User name or password is wrong!");
         }
         UserAuthModel userAuthModel = jwtServiceImpl.generateToken(userAuth);

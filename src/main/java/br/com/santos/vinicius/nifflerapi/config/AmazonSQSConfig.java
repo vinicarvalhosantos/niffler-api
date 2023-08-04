@@ -32,7 +32,13 @@ public class AmazonSQSConfig {
     private String region;
 
     @Value("${aws.sqs.queue.url}")
-    private String sqsUrl;
+    private String sqsMessageUrl;
+
+    @Value("${aws.sqs.message.deleted.queue.url}")
+    private String sqsMessageDeletedUrl;
+
+    @Value("${aws.sqs.timeout.queue.url}")
+    private String sqsTimedOutUrl;
 
     @Bean
     @Primary
@@ -41,7 +47,9 @@ public class AmazonSQSConfig {
 
         return AmazonSQSAsyncClientBuilder
                 .standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(sqsUrl, region))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(sqsMessageUrl, region))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(sqsMessageDeletedUrl, region))
+                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(sqsTimedOutUrl, region))
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
     }

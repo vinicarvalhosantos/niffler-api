@@ -10,7 +10,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.UUID;
 
 @Setter
 @Getter
@@ -37,16 +36,35 @@ public class UserMessageEntity implements Serializable {
     @Column(nullable = false)
     private BigDecimal pointsToAdd;
 
+    @Column(name = "is_spam", nullable = false)
+    private boolean spam;
+
     @Column(nullable = false)
-    private boolean isSpam;
+    private String messageId;
+
+    @Column(nullable = false)
+    private boolean deleted;
 
     @CreatedDate
     private Date createdAt;
 
-    public UserMessageEntity(UserEntity user, int messageLength, BigDecimal pointsToAdd, boolean isSpam) {
+    public UserMessageEntity(UserEntity user, int messageLength, BigDecimal pointsToAdd, boolean spam, String messageId) {
         this.user = user;
         this.messageLength = messageLength;
         this.pointsToAdd = pointsToAdd;
-        this.isSpam = isSpam;
+        this.spam = spam;
+        this.messageId = messageId;
+        this.deleted = false;
+    }
+
+    public UserMessageEntity(Long id, UserEntity user, int messageLength, BigDecimal pointsToAdd, boolean spam, String messageId, boolean deleted, Date createdAt) {
+        this.id = id;
+        this.user = user;
+        this.messageLength = messageLength;
+        this.pointsToAdd = pointsToAdd;
+        this.spam = spam;
+        this.messageId = messageId;
+        this.deleted = deleted;
+        this.createdAt = createdAt;
     }
 }

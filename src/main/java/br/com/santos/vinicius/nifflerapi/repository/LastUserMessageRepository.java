@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface LastUserMessageRepository extends JpaRepository<LastUserMessageEntity, String> {
+public interface LastUserMessageRepository extends JpaRepository<LastUserMessageEntity, Long> {
 
     Optional<LastUserMessageEntity> findLastUserMessageByUserId(Long userId);
 

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface BlacklistRepository extends JpaRepository<BlacklistEntity, String> {
+public interface BlacklistRepository extends JpaRepository<BlacklistEntity, Long> {
 
 
     Optional<BlacklistEntity> findByUserId(Long userId);

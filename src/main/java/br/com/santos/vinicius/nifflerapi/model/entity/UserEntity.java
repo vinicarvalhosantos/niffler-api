@@ -5,15 +5,13 @@ import br.com.santos.vinicius.nifflerapi.model.dto.UserMessageDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
@@ -22,6 +20,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "user")
+@EntityListeners(AuditingEntityListener.class)
 public class UserEntity implements Serializable {
 
     private static final long serialVersionUID = -2091522841039993308L;
@@ -37,14 +36,13 @@ public class UserEntity implements Serializable {
     private String displayName;
 
     @Column
-    @ColumnDefault(value = "0.0")
-    private BigDecimal pointsToAdd;
+    private BigDecimal pointsToAdd = BigDecimal.ZERO;
 
     @Column
-    @ColumnDefault(value = "0.0")
-    private BigDecimal pointsAdded;
+    private BigDecimal pointsAdded = BigDecimal.ZERO;
 
     @CreatedDate
+    @Column(nullable = false, updatable = false)
     private Date createdAt;
 
     public UserEntity(Long id, String username, String displayName, BigDecimal pointsToAdd, BigDecimal pointsAdded) {
@@ -53,7 +51,6 @@ public class UserEntity implements Serializable {
         this.displayName = displayName;
         this.pointsToAdd = pointsToAdd;
         this.pointsAdded = pointsAdded;
-        this.createdAt = new Date();
     }
 
     public boolean equalsTwitchUser(Object obj) {

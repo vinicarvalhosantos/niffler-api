@@ -1,11 +1,13 @@
 package br.com.santos.vinicius.nifflerapi.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmoteUtil {
 
-    private EmoteUtil(){
+    private EmoteUtil() {
 
     }
 
@@ -37,6 +39,23 @@ public class EmoteUtil {
         emotes.forEach(writtenEmoji -> messageFormatted[0] = messageFormatted[0].replaceAll(writtenEmoji, ""));
 
         return messageFormatted[0].trim();
+    }
+
+    public static int calculateEmotesNumberFromMessage(List<String> emotes) {
+        if (emotes.isEmpty()) {
+            return 0;
+        }
+        int emotesNumber = 0;
+
+        for (String emote : emotes) {
+            String[] allEmoteHash = emote.split(":");
+            String[] emoteAllPositionsMessage = allEmoteHash[1].split(",");
+
+            emotesNumber += emoteAllPositionsMessage.length;
+
+        }
+
+        return emotesNumber;
     }
 
 }

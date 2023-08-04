@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public interface UserService {
@@ -25,6 +26,8 @@ public interface UserService {
 
     TwitchUserModel getTwitchUsersByIds(List<UserEntity> userEntityList) throws IOException;
 
-    UserEntity saveUser(UserEntity user);
+    Optional<UserEntity> findUserById(Long id);
+
+    void saveUser(UserEntity user);
 
 }

@@ -1,6 +1,5 @@
 package br.com.santos.vinicius.nifflerapi.service.impl;
 
-import br.com.santos.vinicius.nifflerapi.exception.InternalServerException;
 import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModel;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModelData;
@@ -10,6 +9,7 @@ import br.com.santos.vinicius.nifflerapi.model.response.ErrorResponse;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
 import br.com.santos.vinicius.nifflerapi.model.response.SuccessResponse;
 import br.com.santos.vinicius.nifflerapi.repository.UserRepository;
+import br.com.santos.vinicius.nifflerapi.runnable.RunnableExecutor;
 import br.com.santos.vinicius.nifflerapi.runnable.UserDeleteRunnable;
 import br.com.santos.vinicius.nifflerapi.runnable.UserSaveRunnable;
 import br.com.santos.vinicius.nifflerapi.service.UserService;
@@ -27,9 +27,6 @@ import retrofit2.Call;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,11 +37,11 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    RunnableExecutor runnableExecutor;
+
     @Value("${twitch.client.id}")
     String clientId;
-
-    @Value("${threads.to.be.used}")
-    private int numberOfThreads;
 
     @Override
     public ResponseEntity<Response> getAllUsers() {
@@ -76,7 +73,9 @@ public class UserServiceImpl implements UserService {
             return fetchUsersExisting(twitchUsers, userEntityList);
         }
 
-        ErrorResponse errorResponse = new ErrorResponse("Twitch bad request.", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name());
+        log.info("Any information from Twitch.");
+
+        ErrorResponse errorResponse = new ErrorResponse("Twitch bad request. No response from Twitch.", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(errorResponse));
 
     }
@@ -93,7 +92,7 @@ public class UserServiceImpl implements UserService {
     public UserEntity fetchFromUserMessage(UserMessageDto userMessageDto) {
         log.info("Starting to fetch user from user message.");
         log.info("Checking if user exists in our database.");
-        Optional<UserEntity> userEntity = userRepository.findByUserId(userMessageDto.getUserId());
+        Optional<UserEntity> userEntity = userRepository.findById(userMessageDto.getUserId());
 
         if (userEntity.isEmpty()) {
             log.info("User does not exists in our database. Creating it.");
@@ -202,9 +201,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserEntity saveUser(UserEntity user) {
+    public Optional<UserEntity> findUserById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    @Override
+    public void saveUser(UserEntity user) {
         log.info("Saving user.");
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     private List<UserEntity> extractDifferentUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) {
@@ -251,7 +255,7 @@ public class UserServiceImpl implements UserService {
     private void saveAllUsers(List<UserEntity> usersToBeUpdated) throws InterruptedException {
         log.info("Updating all different users.");
         Runnable worker = new UserSaveRunnable(usersToBeUpdated, userRepository);
-        executeARunnable(worker);
+        runnableExecutor.execute(worker);
 
         log.info("Updated all users.");
     }
@@ -259,17 +263,9 @@ public class UserServiceImpl implements UserService {
     private void deleteAllUsersDeleted(List<UserEntity> usersToBeUpdated) throws InterruptedException {
         log.info("Deleting all deleted users from twitch.");
         Runnable worker = new UserDeleteRunnable(usersToBeUpdated, userRepository);
-        executeARunnable(worker);
+        runnableExecutor.execute(worker);
 
         log.info("Deleted all users.");
-    }
-
-    private void executeARunnable(Runnable worker) throws InterruptedException {
-        ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
-        executor.execute(worker);
-        executor.shutdown();
-        executor.awaitTermination(10000L, TimeUnit.MILLISECONDS);
-
     }
 
     private String extractMessage(int numberOfUsersUpdated) {

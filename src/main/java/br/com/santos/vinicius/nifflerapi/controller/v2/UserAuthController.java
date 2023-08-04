@@ -1,4 +1,4 @@
-package br.com.santos.vinicius.nifflerapi.controller;
+package br.com.santos.vinicius.nifflerapi.controller.v2;
 
 import br.com.santos.vinicius.nifflerapi.controller.handler.ExceptionsHandler;
 import br.com.santos.vinicius.nifflerapi.model.dto.AuthenticateDto;
