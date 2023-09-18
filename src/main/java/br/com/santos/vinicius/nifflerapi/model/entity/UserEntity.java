@@ -45,6 +45,12 @@ public class UserEntity implements Serializable {
     @Column(nullable = false, updatable = false)
     private Date createdAt;
 
+    @Column(nullable = false)
+    private boolean isDeleted = false;
+
+    @Column
+    private String lastUsername;
+
     public UserEntity(Long id, String username, String displayName, BigDecimal pointsToAdd, BigDecimal pointsAdded) {
         this.id = id;
         this.username = username;
@@ -53,16 +59,30 @@ public class UserEntity implements Serializable {
         this.pointsAdded = pointsAdded;
     }
 
+    public UserEntity(Long id, String username, String displayName, Date createdAt, BigDecimal pointsToAdd, BigDecimal pointsAdded, boolean isDeleted) {
+        this.id = id;
+        this.username = username;
+        this.displayName = displayName;
+        this.createdAt = createdAt;
+        this.pointsToAdd = pointsToAdd;
+        this.pointsAdded = pointsAdded;
+        this.isDeleted = isDeleted;
+    }
+
     public boolean equalsTwitchUser(Object obj) {
         if (obj == null) return false;
         if (obj == this) return true;
+
         return Objects.equals(this.username, ((TwitchUserModelData) obj).getLogin())
                 && Objects.equals(this.displayName, ((TwitchUserModelData) obj).getDisplay_name());
     }
 
     public void fetchUserFromTwitchUser(Object obj) {
         if (this.equalsTwitchUser(obj)) return;
+        if (Objects.equals(this.username, ((TwitchUserModelData) obj).getLogin())
+                && Objects.equals(this.displayName, ((TwitchUserModelData) obj).getDisplay_name())) return;
 
+        this.lastUsername = this.username;
         this.username = ((TwitchUserModelData) obj).getLogin();
         this.displayName = ((TwitchUserModelData) obj).getDisplay_name();
     }
@@ -77,7 +97,10 @@ public class UserEntity implements Serializable {
 
     public void fetchUserFromMessage(Object obj) {
         if (this.equalsUserMessage(obj)) return;
+        if (Objects.equals(this.username, ((UserMessageDto) obj).getUsername())
+                && Objects.equals(this.displayName, ((UserMessageDto) obj).getDisplayName())) return;
 
+        this.lastUsername = this.username;
         this.username = ((UserMessageDto) obj).getUsername();
         this.displayName = ((UserMessageDto) obj).getDisplayName();
     }

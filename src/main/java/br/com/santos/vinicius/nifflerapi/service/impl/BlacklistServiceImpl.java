@@ -10,13 +10,17 @@ import br.com.santos.vinicius.nifflerapi.model.response.SuccessResponse;
 import br.com.santos.vinicius.nifflerapi.repository.BlacklistRepository;
 import br.com.santos.vinicius.nifflerapi.service.BlacklistService;
 import br.com.santos.vinicius.nifflerapi.service.UserService;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.IteratorUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -28,11 +32,16 @@ import java.util.stream.Stream;
 @Slf4j
 public class BlacklistServiceImpl implements BlacklistService {
 
-    @Autowired
-    BlacklistRepository blacklistRepository;
+    final BlacklistRepository blacklistRepository;
 
-    @Autowired
-    UserService userService;
+    final UserService userService;
+
+    public BlacklistServiceImpl(BlacklistRepository blacklistRepository, UserService userService) {
+        Assert.notNull(blacklistRepository, "BlacklistRepository must not be null");
+        Assert.notNull(userService, "UserService must not be null");
+        this.blacklistRepository = blacklistRepository;
+        this.userService = userService;
+    }
 
     @Override
     public ResponseEntity<Response> addUserInBlacklist(BlacklistDto blacklistDto) throws IOException {
@@ -97,12 +106,31 @@ public class BlacklistServiceImpl implements BlacklistService {
     }
 
     @Override
+    public ResponseEntity<Response> getAllUsersInBlacklist(int page, int limit) {
+        Page<BlacklistEntity> blacklistEntityPage = blacklistRepository.findAll(PageRequest.of((page - 1), limit, Sort.by("id").ascending()));
+        int totalPages = blacklistEntityPage.getTotalPages();
+        Long totalElements = blacklistEntityPage.getTotalElements();
+
+        List<BlacklistEntity> blacklistEntityList = blacklistEntityPage.get().collect(Collectors.toList());
+
+        if (blacklistEntityList.isEmpty()) {
+            throw new NoSuchElementFoundException("Any user are in blacklist.");
+        }
+
+        SuccessResponse successResponse = new SuccessResponse(formatRecords(blacklistEntityList), "Users were found in blacklist", page, totalPages, totalElements, limit);
+
+        return ResponseEntity.status(HttpStatus.OK).body(new Response(successResponse));
+    }
+
+    @Transactional
+    @Override
     public ResponseEntity<Response> removeUserFromBlacklistByUsername(String username) {
         blacklistRepository.deleteByUsername(username);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
+    @Transactional
     @Override
     public ResponseEntity<Response> removeUserFromBlacklistByUserId(Long userId) {
         blacklistRepository.deleteByUserId(userId);
@@ -115,6 +143,12 @@ public class BlacklistServiceImpl implements BlacklistService {
         Optional<BlacklistEntity> blacklistEntity = blacklistRepository.findByUserId(userId);
 
         return blacklistEntity.isPresent();
+    }
+
+    @Override
+    public void deleteAllUsers(List<UserEntity> userEntityList) {
+        log.info("Removing deleted user from blacklist.");
+        blacklistRepository.deleteAllByUserIn(userEntityList);
     }
 
     private ResponseEntity<Response> getUserInBlacklist(Optional<BlacklistEntity> blacklistEntity) {

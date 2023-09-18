@@ -6,10 +6,9 @@ import br.com.santos.vinicius.nifflerapi.repository.LastUserMessageRepository;
 import br.com.santos.vinicius.nifflerapi.runnable.ClearLastUserMessageRunnable;
 import br.com.santos.vinicius.nifflerapi.runnable.RunnableExecutor;
 import br.com.santos.vinicius.nifflerapi.service.LastUserMessageService;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -21,11 +20,16 @@ import java.util.stream.Collectors;
 @Component
 public class LastUserMessageServiceImpl implements LastUserMessageService {
 
-    @Autowired
-    LastUserMessageRepository lastUserMessageRepository;
+    final LastUserMessageRepository lastUserMessageRepository;
 
-    @Autowired
-    RunnableExecutor runnableExecutor;
+    final RunnableExecutor runnableExecutor;
+
+    public LastUserMessageServiceImpl(LastUserMessageRepository lastUserMessageRepository, RunnableExecutor runnableExecutor) {
+        Assert.notNull(lastUserMessageRepository, "LastUserMessageRepository must not be null");
+        Assert.notNull(runnableExecutor, "RunnableExecutor must not be null");
+        this.lastUserMessageRepository = lastUserMessageRepository;
+        this.runnableExecutor = runnableExecutor;
+    }
 
     @Override
     public LastUserMessageEntity findUserLastMessage(UserEntity user) {
@@ -76,6 +80,12 @@ public class LastUserMessageServiceImpl implements LastUserMessageService {
         } catch (InterruptedException ex) {
             log.error("Was not possible to clear the users last messages. {}", ex.getMessage());
         }
+    }
+
+    @Override
+    public void deleteUserLastMessageByUsers(List<UserEntity> userEntityList) {
+        log.info("Deleting all deleted User Last Message.");
+        this.lastUserMessageRepository.deleteAllByUserIn(userEntityList);
     }
 
 

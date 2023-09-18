@@ -2,6 +2,9 @@ package br.com.santos.vinicius.nifflerapi.runnable;
 
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
 import br.com.santos.vinicius.nifflerapi.repository.UserRepository;
+import br.com.santos.vinicius.nifflerapi.service.BlacklistService;
+import br.com.santos.vinicius.nifflerapi.service.LastUserMessageService;
+import br.com.santos.vinicius.nifflerapi.service.UserMessageService;
 
 import java.util.List;
 

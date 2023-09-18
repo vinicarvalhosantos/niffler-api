@@ -3,6 +3,7 @@ package br.com.santos.vinicius.nifflerapi.filter;
 import br.com.santos.vinicius.nifflerapi.service.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,11 +25,16 @@ import java.io.IOException;
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    JwtService jwtService;
+    final JwtService jwtService;
 
-    @Autowired
-    UserDetailsService userDetailsService;
+    final UserDetailsService userDetailsService;
+
+    public AuthenticationFilter(JwtService jwtService, UserDetailsService userDetailsService) {
+        Assert.notNull(jwtService, "JwtService must not be null");
+        Assert.notNull(userDetailsService, "UserDetailsService must not be null");
+        this.jwtService = jwtService;
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,

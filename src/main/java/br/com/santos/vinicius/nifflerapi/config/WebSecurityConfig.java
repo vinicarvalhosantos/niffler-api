@@ -2,6 +2,7 @@ package br.com.santos.vinicius.nifflerapi.config;
 
 import br.com.santos.vinicius.nifflerapi.filter.AuthenticationFilter;
 import br.com.santos.vinicius.nifflerapi.filter.MyAuthenticationEntryPoint;
+import io.jsonwebtoken.lang.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,14 +26,20 @@ import java.util.List;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    MyAuthenticationEntryPoint myAuthenticationEntryPoint;
+    final MyAuthenticationEntryPoint myAuthenticationEntryPoint;
 
-    @Autowired
-    UserDetailsService userDetailsService;
+    final UserDetailsService userDetailsService;
 
-    @Autowired
-    AuthenticationFilter authenticationFilter;
+    final AuthenticationFilter authenticationFilter;
+
+    public WebSecurityConfig(MyAuthenticationEntryPoint myAuthenticationEntryPoint, UserDetailsService userDetailsService, AuthenticationFilter authenticationFilter) {
+        Assert.notNull(myAuthenticationEntryPoint, "MyAuthenticationEntryPoint must not be null");
+        Assert.notNull(userDetailsService, "UserDetailsService must not be null");
+        Assert.notNull(authenticationFilter, "AuthenticationFilter must not be null");
+        this.myAuthenticationEntryPoint = myAuthenticationEntryPoint;
+        this.userDetailsService = userDetailsService;
+        this.authenticationFilter = authenticationFilter;
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {

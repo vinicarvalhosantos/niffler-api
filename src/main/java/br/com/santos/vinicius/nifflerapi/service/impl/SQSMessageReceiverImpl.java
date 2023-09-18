@@ -5,6 +5,7 @@ import br.com.santos.vinicius.nifflerapi.model.dto.UserMessageDto;
 import br.com.santos.vinicius.nifflerapi.model.dto.UserTimedOutDto;
 import br.com.santos.vinicius.nifflerapi.service.SQSMessageReceiver;
 import br.com.santos.vinicius.nifflerapi.service.UserMessageService;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,8 +16,12 @@ import java.io.IOException;
 @Component
 public class SQSMessageReceiverImpl implements SQSMessageReceiver {
 
-    @Autowired
-    UserMessageService userMessageService;
+    final UserMessageService userMessageService;
+
+    public SQSMessageReceiverImpl(UserMessageService userMessageService) {
+        Assert.notNull(userMessageService, "UserMessageService must not be null");
+        this.userMessageService = userMessageService;
+    }
 
     @Override
     public void receiveMessage(UserMessageDto message, String senderId) throws IOException {

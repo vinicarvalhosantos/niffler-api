@@ -1,5 +1,6 @@
 package br.com.santos.vinicius.nifflerapi.repository;
 
+import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserMessageEntity;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,5 +24,7 @@ public interface UserMessageRepository extends JpaRepository<UserMessageEntity, 
     Optional<UserMessageEntity> findFirstByUserIdAndSpamIsFalseAndDeletedIsFalse(Long userId, Sort sort);
 
     Optional<UserMessageEntity> findByMessageId(String messageId);
+
+    List<UserMessageEntity> findAllByUserIn(List<UserEntity> users);
 
 }

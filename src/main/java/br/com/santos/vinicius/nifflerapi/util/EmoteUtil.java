@@ -1,10 +1,11 @@
 package br.com.santos.vinicius.nifflerapi.util;
 
-import org.apache.commons.lang3.StringUtils;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j2
 public class EmoteUtil {
 
     private EmoteUtil() {
@@ -26,8 +27,13 @@ public class EmoteUtil {
 
             int emoteSecondPosition = Integer.parseInt(emotePositionMessage[1]) + 1;
 
-            String emoteText = message.substring(emoteFirstPosition, emoteSecondPosition);
-            writtenEmotes.add(emoteText);
+            if (emoteFirstPosition >= 0 && emoteSecondPosition <= message.length()) {
+                String emoteText = message.substring(emoteFirstPosition, emoteSecondPosition);
+                writtenEmotes.add(emoteText);
+
+            } else {
+                log.error("Was not possible to extract a specific emote. {}", emote);
+            }
 
         }
 
@@ -35,10 +41,7 @@ public class EmoteUtil {
     }
 
     public static String removeEmotesFromMessage(List<String> emotes, String message) {
-        final String[] messageFormatted = {message};
-        emotes.forEach(writtenEmoji -> messageFormatted[0] = messageFormatted[0].replaceAll(writtenEmoji, ""));
-
-        return messageFormatted[0].trim();
+        return StringUtil.replaceListElementsInString(message, emotes);
     }
 
     public static int calculateEmotesNumberFromMessage(List<String> emotes) {

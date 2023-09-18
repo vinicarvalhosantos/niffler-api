@@ -12,9 +12,10 @@ import br.com.santos.vinicius.nifflerapi.service.BlacklistService;
 import br.com.santos.vinicius.nifflerapi.service.LastUserMessageService;
 import br.com.santos.vinicius.nifflerapi.service.UserMessageService;
 import br.com.santos.vinicius.nifflerapi.service.UserService;
+import br.com.santos.vinicius.nifflerapi.singleton.UserCheers;
 import br.com.santos.vinicius.nifflerapi.util.StringUtil;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
@@ -29,26 +30,41 @@ import java.util.Optional;
 @Component
 public class UserMessageServiceImpl implements UserMessageService {
 
-    @Autowired
-    UserMessageRepository userMessageRepository;
+    final UserMessageRepository userMessageRepository;
 
-    @Autowired
-    UserService userService;
+    final UserService userService;
 
-    @Autowired
-    BlacklistService blacklistService;
+    final BlacklistService blacklistService;
 
-    @Autowired
-    LastUserMessageService lastUserMessageService;
+    final LastUserMessageService lastUserMessageService;
 
-    @Autowired
-    RunnableExecutor runnableExecutor;
+    final RunnableExecutor runnableExecutor;
 
     private static final int[] SUBSCRIPTION_PERCENTAGES = {
             PointsConstant.PERCENTAGE_FOR_SUBS_T1,
             PointsConstant.PERCENTAGE_FOR_SUBS_T2,
             PointsConstant.PERCENTAGE_FOR_SUBS_T3
     };
+    private static final BigDecimal BONUS_FIRST_MESSAGE = BigDecimal.valueOf(0.5);
+
+    private static final BigDecimal BONUS_POLITE_MESSAGE_MULTIPLIER = BigDecimal.valueOf(0.25);
+
+    private static final BigDecimal MAX_POINTS_VALUE = BigDecimal.valueOf(100);
+
+    private static final int SCALE = 2;
+
+    public UserMessageServiceImpl(UserMessageRepository userMessageRepository, UserService userService, BlacklistService blacklistService, LastUserMessageService lastUserMessageService, RunnableExecutor runnableExecutor) {
+        Assert.notNull(userMessageRepository, "UserMessageRepository must not be null");
+        Assert.notNull(userService, "UserService must not be null");
+        Assert.notNull(blacklistService, "BlacklistService must not be null");
+        Assert.notNull(lastUserMessageService, "LastUserMessageService must not be null");
+        Assert.notNull(runnableExecutor, "RunnableExecutor must not be null");
+        this.userMessageRepository = userMessageRepository;
+        this.userService = userService;
+        this.blacklistService = blacklistService;
+        this.lastUserMessageService = lastUserMessageService;
+        this.runnableExecutor = runnableExecutor;
+    }
 
     @Override
     @Transactional
@@ -58,9 +74,13 @@ public class UserMessageServiceImpl implements UserMessageService {
             log.info("User in blacklist. His message will not be analyzed.");
             return;
         }
-        log.info("User is not in blacklist! Proceeding.");
 
         UserEntity user = userService.fetchFromUserMessage(userMessageDto);
+
+        if (user.isDeleted()) {
+            log.warn("User is set as deleted. Something is wrong, please check!");
+            return;
+        }
 
         String message = userMessageDto.getMessage();
         int messageLength = userMessageDto.messageLength();
@@ -71,7 +91,7 @@ public class UserMessageServiceImpl implements UserMessageService {
         log.info("Comparing the messages.");
         double similarity = lastUserMessage.compareMessages(message);
 
-        if (StringUtil.isSpam(message) || similarity >= 0.7) {
+        if (StringUtil.isFlood(message) || similarity >= 0.7) {
             log.info("The message sent is a spam, user will not receive points this message.");
 
             UserMessageEntity userMessage = new UserMessageEntity(user, messageLength, pointsToAdd, true, userMessageDto.getMessageId());
@@ -142,6 +162,15 @@ public class UserMessageServiceImpl implements UserMessageService {
         }
     }
 
+    @Override
+    public void updateDeletedUserMessage(List<UserEntity> userEntityList, UserEntity userDeleted) {
+        log.info("Updating all deleted users message to be as deleted user.");
+        List<UserMessageEntity> userMessageEntityList = userMessageRepository.findAllByUserIn(userEntityList);
+        userMessageEntityList.forEach(userMessage -> userMessage.setUser(userDeleted));
+
+        userMessageRepository.saveAll(userMessageEntityList);
+    }
+
     private void saveData(UserEntity user, UserMessageEntity userMessage, LastUserMessageEntity lastUserMessage,
                           BigDecimal pointsToAdd, String message) {
         log.info("Finishing and saving the message and points information.");
@@ -162,32 +191,75 @@ public class UserMessageServiceImpl implements UserMessageService {
     private BigDecimal calculatePointsToAdd(UserMessageDto userMessageDto, int messageLength) {
         log.info("Starting to calculate the percentage that user will receive with this message.");
 
-        int percentage = calculatePercentage(userMessageDto.isSubscriber(),
-                userMessageDto.getSubscriptionTime(), userMessageDto.getSubscriptionTier());
+        double percentage = calculatePercentage(userMessageDto.isSubscriber(), userMessageDto.getSubscriptionTime(),
+                userMessageDto.getSubscriptionTier(), userMessageDto.getCheers(), userMessageDto.getUserId());
 
-        double pointsToAdd = (Double.parseDouble(String.valueOf(messageLength)) / percentage);
+        BigDecimal pointsToAdd = BigDecimal.valueOf(messageLength).divide(BigDecimal.valueOf(percentage), SCALE, RoundingMode.HALF_EVEN);
+
+        if (pointsToAdd.compareTo(MAX_POINTS_VALUE) > 0) {
+            pointsToAdd = MAX_POINTS_VALUE;
+        }
+
         log.info("Checking if it is user's first message.");
         if (userMessageDto.isFirstMessage()) {
             log.info("User's first message! Receiving a bonus.");
-            pointsToAdd += 10;
+            pointsToAdd = pointsToAdd.multiply(BONUS_FIRST_MESSAGE);
         }
 
         log.info("Checking if user's  message is polite.");
         if (userMessageDto.isMessagePolite()) {
             log.info("User's message is polite! Receiving a bonus.");
-            pointsToAdd = pointsToAdd * 0.25;
+            pointsToAdd = pointsToAdd.multiply(BONUS_POLITE_MESSAGE_MULTIPLIER);
         }
 
         log.info("Finished calculation.");
-        return BigDecimal.valueOf(pointsToAdd).setScale(2, RoundingMode.HALF_EVEN);
+        return pointsToAdd;
     }
 
-    private int calculatePercentage(boolean isSubscriber, int subscriptionTime, int subscriptionTier) {
+    private double calculatePercentage(boolean isSubscriber, int subscriptionTime, int subscriptionTier, int cheers, Long userId) {
         if (isSubscriber) {
-            int subtractPercentage = subscriptionTime < 200 ? subscriptionTime / 10 : 20;
-            return SUBSCRIPTION_PERCENTAGES[subscriptionTier - 1] - subtractPercentage;
+            return calculateSubscriberPercentage(subscriptionTime, subscriptionTier, cheers, userId);
         }
 
-        return PointsConstant.PERCENTAGE_FOR_NON_SUBS;
+        return calculateNonSubscriberPercentage(cheers, userId);
+    }
+
+    private int calculateSubscriberPercentage(int subscriptionTime, int subscriptionTier, int cheers, Long userId) {
+        int subtractPercentage = calculateSubscriberSubtractPercentage(subscriptionTime);
+        int subscriptionPercentage = SUBSCRIPTION_PERCENTAGES[subscriptionTier - 1];
+        subtractPercentage += calculateCheersSubtractPercentage(cheers, userId);
+        if (subtractPercentage >= subscriptionPercentage) return 1;
+
+        return subscriptionPercentage - subtractPercentage;
+    }
+
+    private double calculateNonSubscriberPercentage(int cheers, Long userId) {
+        double subtractPercentage = calculateCheersSubtractPercentage(cheers, userId);
+        if (subtractPercentage >= PointsConstant.PERCENTAGE_FOR_NON_SUBS) return 1;
+
+        return PointsConstant.PERCENTAGE_FOR_NON_SUBS - subtractPercentage;
+    }
+
+    private int calculateSubscriberSubtractPercentage(int subscriptionTime) {
+        int maxSubscriptionTimeForSubtract = 200;
+
+        return subscriptionTime < maxSubscriptionTimeForSubtract ? subscriptionTime / 10 : 20;
+    }
+
+    private double calculateCheersSubtractPercentage(int cheers, Long userId) {
+        if (cheers == 0) {
+            return 0;
+        }
+
+        UserCheers userCheers = UserCheers.getInstance();
+        int cheersSent = cheers + userCheers.cheersAmountSentByUser(userId);
+
+        if (cheersSent >= 100) {
+            userCheers.clear(userId);
+            return (double) cheersSent / 100;
+        }
+
+        userCheers.addCheersIntoList(userId, cheers);
+        return 0;
     }
 }

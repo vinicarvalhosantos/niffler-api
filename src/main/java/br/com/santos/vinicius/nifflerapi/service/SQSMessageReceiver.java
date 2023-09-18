@@ -16,10 +16,10 @@ public interface SQSMessageReceiver {
     @SqsListener(value = "${aws.sqs.queue.name}", deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
     void receiveMessage(UserMessageDto message, @Header("SenderId") String senderId) throws IOException;
 
-    @SqsListener(value = "${aws.sqs.message.deleted.queue.name}", deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
+    //@SqsListener(value = "${aws.sqs.message.deleted.queue.name}", deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
     void receiveDeletedMessage(UserDeletedMessageDto deletedMessageDto, @Header("SenderId") String senderId);
 
-    @SqsListener(value = "${aws.sqs.timeout.queue.name}", deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
+    //@SqsListener(value = "${aws.sqs.timeout.queue.name}", deletionPolicy = SqsMessageDeletionPolicy.ON_SUCCESS)
     void receiveUserTimedOut(UserTimedOutDto timedOutDto, String senderId);
 
 }

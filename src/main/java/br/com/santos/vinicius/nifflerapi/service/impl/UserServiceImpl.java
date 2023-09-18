@@ -3,27 +3,32 @@ package br.com.santos.vinicius.nifflerapi.service.impl;
 import br.com.santos.vinicius.nifflerapi.exception.NoSuchElementFoundException;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModel;
 import br.com.santos.vinicius.nifflerapi.model.TwitchUserModelData;
+import br.com.santos.vinicius.nifflerapi.model.UserFetchModel;
 import br.com.santos.vinicius.nifflerapi.model.dto.UserMessageDto;
 import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
-import br.com.santos.vinicius.nifflerapi.model.response.ErrorResponse;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
 import br.com.santos.vinicius.nifflerapi.model.response.SuccessResponse;
 import br.com.santos.vinicius.nifflerapi.repository.UserRepository;
 import br.com.santos.vinicius.nifflerapi.runnable.RunnableExecutor;
-import br.com.santos.vinicius.nifflerapi.runnable.UserDeleteRunnable;
-import br.com.santos.vinicius.nifflerapi.runnable.UserSaveRunnable;
+import br.com.santos.vinicius.nifflerapi.service.BlacklistService;
+import br.com.santos.vinicius.nifflerapi.service.LastUserMessageService;
 import br.com.santos.vinicius.nifflerapi.service.UserService;
 import br.com.santos.vinicius.nifflerapi.singleton.TwitchRequestsRetrofit;
 import br.com.santos.vinicius.nifflerapi.singleton.TwitchToken;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.IteratorUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import retrofit2.Call;
 
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
@@ -34,15 +39,35 @@ import java.util.stream.Stream;
 @Component
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    UserRepository userRepository;
+    final UserRepository userRepository;
 
-    @Autowired
-    RunnableExecutor runnableExecutor;
+    final RunnableExecutor runnableExecutor;
+
+    final LastUserMessageService lastUserMessageService;
+
+    final BlacklistService blacklistService;
+
+    TwitchToken twitchToken;
 
     @Value("${twitch.client.id}")
     String clientId;
 
+    @Value("${threads.to.be.used}")
+    int numberOfThreads;
+
+    public UserServiceImpl(UserRepository userRepository, RunnableExecutor runnableExecutor,
+                           LastUserMessageService lastUserMessageService, @Lazy BlacklistService blacklistService) {
+        Assert.notNull(userRepository, "UserRepository must not be null");
+        Assert.notNull(runnableExecutor, "RunnableExecutor must not be null");
+        Assert.notNull(lastUserMessageService, "LastUserMessageService must not be null");
+        Assert.notNull(blacklistService, "BlacklistService must not be null");
+        this.userRepository = userRepository;
+        this.runnableExecutor = runnableExecutor;
+        this.lastUserMessageService = lastUserMessageService;
+        this.blacklistService = blacklistService;
+    }
+
+    @Deprecated
     @Override
     public ResponseEntity<Response> getAllUsers() {
         log.info("Getting all users.");
@@ -59,25 +84,35 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<Response> fetchAllUsers() throws IOException, InterruptedException {
+    public ResponseEntity<Response> getAllUsers(int page, int limit) {
+        log.info("Getting all users.");
+        Page<UserEntity> userEntityPage = userRepository.findAll(PageRequest.of((page - 1), limit, Sort.by("id").ascending()));
+        int totalPages = userEntityPage.getTotalPages();
+        Long totalElements = userEntityPage.getTotalElements();
+        List<UserEntity> userEntityList = userEntityPage.get().collect(Collectors.toList());
 
-        log.info("Fetching all users in database.");
-        List<UserEntity> userEntityList = IteratorUtils.toList(userRepository.findAll().iterator());
-
-        log.info("Trying to find all twitch users by UserID");
-        TwitchUserModel twitchUsers = getTwitchUsersByIds(userEntityList);
-
-
-        log.info("Check the result from twitch and fetch users in database");
-        if (twitchUsers != null) {
-            return fetchUsersExisting(twitchUsers, userEntityList);
+        if (userEntityList.isEmpty()) {
+            log.info("Any users in our database.");
+            throw new NoSuchElementFoundException("Any users in our database.");
         }
 
-        log.info("Any information from Twitch.");
+        SuccessResponse successResponse = new SuccessResponse(formatRecords(userEntityList), "Users were found in our database", page, totalPages, totalElements, limit);
+        log.info("Users were found in our database.");
+        return ResponseEntity.status(HttpStatus.OK).body(new Response(successResponse));
+    }
 
-        ErrorResponse errorResponse = new ErrorResponse("Twitch bad request. No response from Twitch.", HttpStatus.BAD_REQUEST.value(), HttpStatus.BAD_REQUEST.name());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new Response(errorResponse));
+    @Transactional
+    @Override
+    public ResponseEntity<Response> fetchAllUsers() throws IOException {
+        log.info("Starting to fetch all users.");
+        Page<UserEntity> userEntityPage = userRepository.findAllByDeletedIsFalse(PageRequest.of(0, 100, Sort.by("createdAt", "id").ascending()));
 
+        UserFetchModel userFetchModel = collectTwitchUsersList(userEntityPage);
+
+        executeThreads(userFetchModel.getThreadList());
+
+        log.info("Check the result from twitch and fetch users in database");
+        return fetchUsersExisting(userFetchModel.getTwitchUsers(), userFetchModel.getUserEntityList());
     }
 
     @Override
@@ -112,7 +147,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    private ResponseEntity<Response> fetchUsersExisting(TwitchUserModel twitchUsers, List<UserEntity> userEntityList) throws InterruptedException {
+    private ResponseEntity<Response> fetchUsersExisting(TwitchUserModel twitchUsers, List<UserEntity> userEntityList) {
         int numberOfUsersUpdated = fetchUsers(twitchUsers.getData(), userEntityList);
         String message = extractMessage(numberOfUsersUpdated);
 
@@ -132,7 +167,7 @@ public class UserServiceImpl implements UserService {
         return getUserFetched(userEntity, twitchUser);
     }
 
-    private int fetchUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) throws InterruptedException {
+    private int fetchUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) {
         List<UserEntity> usersDifferent = extractDifferentUsers(twitchUserModelDataList, userEntityList);
         List<UserEntity> usersDeleted = extractDeletedUsers(twitchUserModelDataList, userEntityList);
 
@@ -186,7 +221,6 @@ public class UserServiceImpl implements UserService {
     public TwitchUserModel getTwitchUsersByIds(List<UserEntity> userEntityList) throws IOException {
 
         String[] userIds = userEntityList.stream().map(userEntity -> userEntity.getId().toString()).toArray(String[]::new);
-        TwitchToken twitchToken = TwitchToken.getInstance();
 
         final String TOKEN = twitchToken.token;
 
@@ -209,6 +243,92 @@ public class UserServiceImpl implements UserService {
     public void saveUser(UserEntity user) {
         log.info("Saving user.");
         userRepository.save(user);
+    }
+
+    @Override
+    public List<UserEntity> findAllUsersMarked(List<String> usernames) {
+        log.info("Looking for all users marked in the message");
+
+        List<UserEntity> userEntityList = userRepository.findAllByUsernameIn(usernames);
+
+        if (userEntityList.isEmpty()) {
+            log.info("Any user were marked.");
+        }
+
+        return userEntityList;
+    }
+
+    private UserFetchModel collectTwitchUsersList(Page<UserEntity> userEntityPage) throws IOException {
+        TwitchUserModel twitchUsers = new TwitchUserModel();
+        int totalPages = userEntityPage.getTotalPages();
+        List<UserEntity> userEntityList = new ArrayList<>(userEntityPage.toList());
+        int pagesPerThread = (totalPages / numberOfThreads) + 1;
+        List<Thread> threads = new ArrayList<>();
+        this.twitchToken = TwitchToken.getInstance();
+        log.info("There are {} pages of users. ~{} users each page. Will be execute in {} threads", totalPages,
+                userEntityPage.getSize(), numberOfThreads);
+
+        log.info("Collecting twitch users from users id.");
+        for (int i = 0; i < numberOfThreads; i++) {
+            int threadLastPage;
+            if (i == (numberOfThreads - 1)) {
+                threadLastPage = totalPages - 1;
+            } else {
+                threadLastPage = (pagesPerThread * (i + 1)) - 1;
+            }
+
+            int threadFirstPage = pagesPerThread * i;
+
+            Thread thread = collectThreadTwitchUserExecution(twitchUsers, userEntityList, userEntityPage, threadFirstPage, threadLastPage);
+
+            threads.add(thread);
+        }
+
+        return new UserFetchModel(twitchUsers, userEntityList, threads);
+    }
+
+    private Thread collectThreadTwitchUserExecution(TwitchUserModel twitchUsers, List<UserEntity> userEntityList,
+                                                    Page<UserEntity> userEntityPage, int threadFirstPage, int threadLastPage) {
+        return new Thread(() -> {
+            for (int page = threadFirstPage; page <= threadLastPage; page++) {
+                try {
+                    Page<UserEntity> tempUserEntityPage;
+
+                    if (page != 0) {
+                        tempUserEntityPage = userRepository.findAllByDeletedIsFalse(PageRequest.of(page, 100, Sort.by("createdAt", "id").ascending()));
+                    } else {
+                        tempUserEntityPage = userEntityPage;
+                    }
+
+                    TwitchUserModel tempTwitchUserModel = getTwitchUsersByIds(tempUserEntityPage.toList());
+
+                    if (tempTwitchUserModel != null) {
+                        twitchUsers.getData().addAll(tempTwitchUserModel.getData());
+                        userEntityList.addAll(tempUserEntityPage.toList());
+                    } else {
+                        log.warn("For some reason a TwitchUserModel was null. {}", userEntityList);
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
+    private void executeThreads(List<Thread> threads) {
+        try {
+            for (Thread thread : threads) {
+                thread.start();
+            }
+
+            for (Thread thread : threads) {
+
+                thread.join();
+
+            }
+        } catch (InterruptedException e) {
+            log.error("An error occurred when tried to execute {} threads: {}", threads.size(), e.getMessage());
+        }
     }
 
     private List<UserEntity> extractDifferentUsers(List<TwitchUserModelData> twitchUserModelDataList, List<UserEntity> userEntityList) {
@@ -252,20 +372,23 @@ public class UserServiceImpl implements UserService {
         return usersDeleted;
     }
 
-    private void saveAllUsers(List<UserEntity> usersToBeUpdated) throws InterruptedException {
+    private void saveAllUsers(List<UserEntity> usersToBeUpdated) {
         log.info("Updating all different users.");
-        Runnable worker = new UserSaveRunnable(usersToBeUpdated, userRepository);
-        runnableExecutor.execute(worker);
+        userRepository.saveAll(usersToBeUpdated);
 
         log.info("Updated all users.");
     }
 
-    private void deleteAllUsersDeleted(List<UserEntity> usersToBeUpdated) throws InterruptedException {
-        log.info("Deleting all deleted users from twitch.");
-        Runnable worker = new UserDeleteRunnable(usersToBeUpdated, userRepository);
-        runnableExecutor.execute(worker);
+    private void deleteAllUsersDeleted(List<UserEntity> usersToBeSetDeleted) {
+        log.info("Setting as deleted all deleted twitch users.");
+        lastUserMessageService.deleteUserLastMessageByUsers(usersToBeSetDeleted);
+        blacklistService.deleteAllUsers(usersToBeSetDeleted);
+        usersToBeSetDeleted.forEach(user -> user.setDeleted(true));
+        usersToBeSetDeleted.forEach(user -> user.setPointsToAdd(BigDecimal.ZERO));
+        usersToBeSetDeleted.forEach(user -> user.setPointsAdded(BigDecimal.ZERO));
+        userRepository.saveAll(usersToBeSetDeleted);
 
-        log.info("Deleted all users.");
+        log.info("All deleted users set as deleted.");
     }
 
     private String extractMessage(int numberOfUsersUpdated) {

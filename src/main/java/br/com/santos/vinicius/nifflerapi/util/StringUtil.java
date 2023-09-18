@@ -3,6 +3,7 @@ package br.com.santos.vinicius.nifflerapi.util;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -28,7 +29,7 @@ public class StringUtil {
         return 1.0 - ((double) distance / (double) length);
     }
 
-    public static boolean isSpam(String message) {
+    public static boolean isFlood(String message) {
         int numRepeatedKs = countMatches("((?i)k)\\1{3}", message);
 
         return numRepeatedKs > MAX_REPEATED_KS;
@@ -40,6 +41,13 @@ public class StringUtil {
                 .results()
                 .mapToInt(m -> 1)
                 .sum();
+    }
+
+    public static String replaceListElementsInString(String str, List<String> elements) {
+        final String[] strFormatted = {str};
+        elements.forEach(element -> strFormatted[0] = strFormatted[0].replace(element, ""));
+
+        return strFormatted[0].trim();
     }
 
 }

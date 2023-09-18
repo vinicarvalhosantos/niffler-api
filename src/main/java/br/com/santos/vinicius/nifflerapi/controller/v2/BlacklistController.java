@@ -4,6 +4,7 @@ import br.com.santos.vinicius.nifflerapi.controller.handler.ExceptionsHandler;
 import br.com.santos.vinicius.nifflerapi.model.dto.BlacklistDto;
 import br.com.santos.vinicius.nifflerapi.model.response.Response;
 import br.com.santos.vinicius.nifflerapi.service.BlacklistService;
+import io.jsonwebtoken.lang.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,8 +15,12 @@ import java.io.IOException;
 @RequestMapping("v2/blacklist")
 public class BlacklistController extends ExceptionsHandler {
 
-    @Autowired
-    BlacklistService blacklistService;
+    final BlacklistService blacklistService;
+
+    public BlacklistController(BlacklistService blacklistService) {
+        Assert.notNull(blacklistService, "BlacklistService must not be null");
+        this.blacklistService = blacklistService;
+    }
 
 
     @GetMapping("/username/{username}")
@@ -30,8 +35,8 @@ public class BlacklistController extends ExceptionsHandler {
     }
 
     @GetMapping("")
-    public ResponseEntity<Response> getAllUsersInBlacklist() {
-        return blacklistService.getAllUsersInBlacklist();
+    public ResponseEntity<Response> getAllUsersInBlacklist(@RequestParam(name = "page", defaultValue = "1") int page, @RequestParam(name = "limit", defaultValue = "50") int limit) {
+        return blacklistService.getAllUsersInBlacklist(page, limit);
     }
 
 

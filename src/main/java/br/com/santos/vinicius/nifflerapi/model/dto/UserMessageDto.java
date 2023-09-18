@@ -1,5 +1,6 @@
 package br.com.santos.vinicius.nifflerapi.model.dto;
 
+import br.com.santos.vinicius.nifflerapi.model.entity.UserEntity;
 import br.com.santos.vinicius.nifflerapi.util.EmoteUtil;
 import br.com.santos.vinicius.nifflerapi.util.MessageUtil;
 import lombok.Getter;
@@ -39,6 +40,8 @@ public class UserMessageDto implements Serializable {
 
     private String messageId;
 
+    private int cheers;
+
     public int messageLength() {
         try {
             if (this.emoteOnly) {
@@ -47,8 +50,12 @@ public class UserMessageDto implements Serializable {
             List<String> emotes = EmoteUtil.extractWrittenEmotes(this.emotesSent, this.message);
             String messageWithoutEmotes = EmoteUtil.removeEmotesFromMessage(emotes, this.message);
             int emotesNumber = EmoteUtil.calculateEmotesNumberFromMessage(this.emotesSent);
+            log.info("Checking if there are marked users in message.");
+            List<UserEntity> usersMarked = MessageUtil.findUsersMarked(this.message);
+            String messageWithoutEmotesAndUsersMarked = MessageUtil.removeUsersMarkedFromMessage(messageWithoutEmotes, usersMarked);
+            String messageWithoutEmotesUsersMarkedAndCheers = MessageUtil.removeCheerFromMessage(messageWithoutEmotesAndUsersMarked);
 
-            return messageWithoutEmotes.length() + emotesNumber;
+            return messageWithoutEmotesUsersMarkedAndCheers.length() + emotesNumber + usersMarked.size();
         } catch (PatternSyntaxException ex) {
             log.error("Was not possible to calculate message length! {}", ex.getMessage());
             return 0;

@@ -14,7 +14,10 @@ import java.util.Optional;
 @Service
 public interface UserService {
 
+    @Deprecated
     ResponseEntity<Response> getAllUsers();
+
+    ResponseEntity<Response> getAllUsers(int page, int limit);
 
     ResponseEntity<Response> fetchAllUsers() throws IOException, InterruptedException;
 
@@ -29,5 +32,7 @@ public interface UserService {
     Optional<UserEntity> findUserById(Long id);
 
     void saveUser(UserEntity user);
+
+    List<UserEntity> findAllUsersMarked(List<String> usernames);
 
 }

@@ -10,6 +10,7 @@ import br.com.santos.vinicius.nifflerapi.model.response.SuccessResponse;
 import br.com.santos.vinicius.nifflerapi.repository.UserAuthRepository;
 import br.com.santos.vinicius.nifflerapi.service.EncryptService;
 import br.com.santos.vinicius.nifflerapi.service.UserAuthService;
+import io.jsonwebtoken.lang.Assert;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,14 +24,20 @@ import java.util.Optional;
 @Component
 public class UserAuthServiceImpl implements UserAuthService {
 
-    @Autowired
-    private EncryptService encryptService;
+    private final EncryptService encryptService;
 
-    @Autowired
-    private UserAuthRepository userAuthRepository;
+    private final UserAuthRepository userAuthRepository;
 
-    @Autowired
-    private JwtServiceImpl jwtServiceImpl;
+    private final JwtServiceImpl jwtServiceImpl;
+
+    public UserAuthServiceImpl(EncryptService encryptService, UserAuthRepository userAuthRepository, JwtServiceImpl jwtServiceImpl) {
+        Assert.notNull(encryptService, "UserAuthRepository must not be null");
+        Assert.notNull(userAuthRepository, "userAuthRepository must not be null");
+        Assert.notNull(jwtServiceImpl, "JwtServiceImpl must not be null");
+        this.encryptService = encryptService;
+        this.userAuthRepository = userAuthRepository;
+        this.jwtServiceImpl = jwtServiceImpl;
+    }
 
     @Override
     public ResponseEntity<Response> register(UserAuthEntity userAuthEntity) {
